@@ -9,10 +9,10 @@ import PlanningFuture from "./views/FuturePlanning";
 function App() {
   return (
     <div className="px-32 py-16 min-h-screen">
-      <header className="flex items-center mb-16">
+      <header className="flex justify-center items-center mb-16">
         <LogoZeus />
       </header>
-      <main className="flex flex-col min-h-screen">
+      <main>
         <BrowserRouter>
           <Layout>
             <Routes>

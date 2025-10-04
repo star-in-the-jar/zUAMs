@@ -1,0 +1,158 @@
+@use "sass:color";
+
+$color-zus-green: #007A33;
+$color-zus-white: #FFFFFF;
+$color-zus-grey: #F0F0F0;
+$color-text-dark: #333333;
+
+@mixin message-bubble-base {
+  padding: 10px 15px;
+  border-radius: 20px;
+  max-width: 75%;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.chatbotContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  height: 600px;
+  border: 1px solid $color-zus-green;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background-color: $color-zus-white;
+}
+
+.chatbotHeader {
+  background-color: $color-zus-green;
+  color: $color-zus-white;
+  padding: 15px;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.messagesWindow {
+  flex-grow: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: $color-zus-grey;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.senderAvatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: $color-zus-white;
+    margin-top: 5px;
+
+    .botChatAvatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+    .userChatAvatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+}
+
+.botMessage {
+  justify-content: flex-start;
+  
+  .senderAvatar {
+    background-color: $color-zus-white;
+    margin-right: 10px;
+    border: 1px solid $color-zus-green;
+  }
+  
+  .messageBubble {
+    @include message-bubble-base;
+    background-color: $color-zus-white;
+    color: #333;
+    border: 1px solid #DDD;
+    border-top-left-radius: 5px;
+  }
+}
+  
+.userMessage {
+  justify-content: flex-end;
+  
+  .senderAvatar {
+      order: 2; 
+      background-color: $color-zus-white;
+      margin-left: 10px;
+  }
+  
+  .messageBubble {
+    @include message-bubble-base;
+    order: 1;
+    background-color: $color-zus-green;
+    color: $color-zus-white;
+    border-top-right-radius: 5px;
+  }
+}
+
+.inputForm {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #CCC;
+  background-color: $color-zus-white;
+  color: $color-text-dark;
+}
+
+.messageInput {
+  flex-grow: 1;
+  padding: 10px 15px;
+  border: 1px solid #CCC;
+  border-radius: 20px;
+  margin-right: 10px;
+  font-size: 1em;
+  
+  &:focus {
+    outline: none;
+    border-color: $color-zus-green;
+    box-shadow: 0 0 0 2px color.adjust($color-zus-green, $alpha: -0.8);
+  }
+}
+
+.sendButton {
+  background-color: $color-zus-green;
+  color: $color-zus-white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: color.adjust($color-zus-green, $lightness: -10%);
+  }
+  
+  &:active {
+    background-color: $color-zus-green;
+  }
+}

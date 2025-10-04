@@ -7,37 +7,43 @@ import SectionLeavesAndBreaks from "@/components/SectionLeavesAndBreaks";
 import SectionSavings from "@/components/SectionSavings";
 import { calculatePension } from "@/core/calculatePension";
 import { GENDERS } from "@/const/genders";
+import ErrorIcon from "@mui/icons-material/Error";
 
 const Result: React.FC = () => {
   const snap = useSnapshot(appState);
 
   return (
-    <div className="flex flex-col items-center pb-20 min-h-screen">
-      <h1 className="font-semibold text-primary text-3xl">
-        Przyjmując założenia:
-      </h1>
-      <form className="">
-        <div className="flex flex-col gap-y-4 w-full max-w-2xl">
-          <SectionAgeAndRetirement />
-          <div className="collapse collapse-arrow bg-primary/5 text-primary">
-            <input type="checkbox" className="collapse-toggle" />
-            <div className="collapse-title font-medium text-xl">
-              Więcej opcji
-            </div>
-            <div className="collapse-content">
-              <div className="flex flex-col gap-y-6 pt-4">
-                <SectionWorkAndSalary />
-                <SectionLeavesAndBreaks />
-                <SectionSavings />
+    <div className="flex flex-col min-h-screen items-center pb-20">
+      <div className=" max-w-2xl w-full">
+        <h1 className="mb-6 font-semibold text-primary text-4xl">
+          Zakładając, że
+        </h1>
+        <div className="alert bg-accent text-accent-content">
+          <ErrorIcon />
+          Pola oznaczone kolorem żółtym mają domyślne wartości statystycznego
+          Polaka/Polki
+        </div>
+        <form className="mb-6">
+          <div className="flex flex-col gap-y-4 w-full">
+            <SectionAgeAndRetirement />
+            <div className="collapse collapse-arrow bg-primary/5 text-primary">
+              <input type="checkbox" className="collapse-toggle" />
+              <div className="collapse-title font-medium text-xl">
+                Więcej opcji
+              </div>
+              <div className="collapse-content">
+                <div className="flex flex-col gap-y-6 pt-4">
+                  <SectionWorkAndSalary />
+                  <SectionLeavesAndBreaks />
+                  <SectionSavings />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
-      <span className="p-6 text-xs text-base-content/70">
-        Wszystkie wyświetlane i oczekiwane kwoty uwzględniają inflację i prezentują wartość nabywczą pieniądza z dnia dzisiejszego.
-      </span>
-      <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-l -translate-x-1/2">
+        </form>
+      </div>
+
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 text-base p-4 px-6 rounded-full shadow-md border border-base-200 bg-white">
         Otrzymasz emeryturę w wysokości&nbsp;
         <span className="font-bold text-primary">
           {calculatePension({

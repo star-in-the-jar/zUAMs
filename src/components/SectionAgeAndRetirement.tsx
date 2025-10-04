@@ -32,7 +32,7 @@ const SectionAgeAndRetirement: React.FC = () => {
   const snap = useSnapshot(appState);
   return (
     <div className="bg-white card text-base-content">
-      <div className="p-4 card-body">
+      <div className="card-body">
         <h3 className="mb-4 text-lg text-primary card-title">
           Wiek i emerytura
         </h3>

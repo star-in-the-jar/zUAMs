@@ -3,19 +3,25 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/views/Home";
 import Calculator from "@/views/Calculator";
 import Layout from "@/components/Layout";
+import LogoZeus from "@/components/LogoZeus";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout>
-        <div className="flex flex-col px-32 py-16 min-h-screen">
+    <div className="px-32 py-16 min-h-screen">
+      <header className="flex items-center mb-16">
+        <LogoZeus />
+      </header>
+      <main className="flex flex-col px-32 py-16 min-h-screen">
+        <BrowserRouter>
+        <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/calculator" element={<Calculator />} />
           </Routes>
-        </div>
-      </Layout>
-    </BrowserRouter>
+        </Layout>
+        </BrowserRouter>
+      </main>
+    </div>
   );
 }
 

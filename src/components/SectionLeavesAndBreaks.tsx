@@ -21,9 +21,9 @@ const handleAverageSickDaysChange = (
 const SectionLeavesAndBreaks: React.FC = () => {
   const snap = useSnapshot(appState);
   return (
-    <div className="bg-white card text-base-content">
+    <div className="bg-white text-base-content card">
       <div className="p-4 card-body">
-        <h3 className="mb-4 text-lg card-title text-primary">
+        <h3 className="mb-4 text-primary text-lg card-title">
           Urlopy i przerwy
         </h3>
         <div className="flex flex-col gap-y-4">

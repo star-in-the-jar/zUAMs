@@ -2,7 +2,7 @@ import type { Gender } from "@/const/genders";
 import { proxy } from "valtio";
 
 export type AppState = {
-  pension: string;
+  pension: number;
   lastValid: string;
   gender: Gender | undefined;
   age: number;
@@ -20,7 +20,7 @@ export type AppState = {
 
 // Global app state for pension and related values
 export const appState = proxy<AppState>({
-  pension: "",
+  pension: 0,
   lastValid: "",
   gender: undefined,
   age: 20,

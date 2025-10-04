@@ -57,6 +57,8 @@ export type ZusRetirementConfig = {
     avgMonthsAliveAfterRetirement: number
     /** Months of studying - counted towards retirement but no contributions. Capped at 8 years (96 months) */
     monthsOfStudying: number
+    /** Months of maternity leave - counted towards retirement but no contributions */
+    monthsMaternityLeave: number
     /** Yearly valorization coefficient for account balance. Default: fixed 2.5% (1.025) */
     yearlyValorizationCoef: (year: number) => number
     /** Yearly valorization multiplier for retirement payments. Default: fixed 2.5% (1.025) */
@@ -180,7 +182,7 @@ function simulateZusAccumulation(config: ZusRetirementConfig): number {
 export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetirementResult {
     const employmentMonths = calculateContributionMonths(config.employmentPeriods, config.simStartYear)
     const cappedStudyingMonths = Math.min(config.monthsOfStudying, 8 * 12) // Cap at 8 years
-    const totalMonthsContributed = employmentMonths + cappedStudyingMonths
+    const totalMonthsContributed = employmentMonths + cappedStudyingMonths + config.monthsMaternityLeave
     
     // Step 1: Calculate account balance (only from employment, not studying)
     const totalZusAccountBalanceAtTimeOfRetirement = simulateZusAccumulation(config)

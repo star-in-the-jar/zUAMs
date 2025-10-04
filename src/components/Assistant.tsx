@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send } from '@mui/icons-material';
+import { OpenAIChatSession } from '@/ai';
+import { getToolDescriptions } from '@/aiTools';
 
 interface Message {
   id: string;
@@ -21,18 +23,52 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
       isUser: false,
       timestamp: new Date(),
     },
-    {
-      id: '2',
-      text: 'Co zrobić, żeby mieć emeryturę w wysokości 3500 PLN?',
-      isUser: true,
-      timestamp: new Date(),
-    },
   ]);
 
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatSessionRef = useRef<OpenAIChatSession | null>(null);
+
+  // Initialize chat session
+  useEffect(() => {
+    const session = new OpenAIChatSession({
+      model: 'gpt-4o-mini',
+      temperature: 0.3,
+      maxTokens: 1000,
+    });
+    
+    // Set system message for retirement advisor
+    const basePrompt = `
+Jesteś Zeus - specjalistą ds. emerytur i ubezpieczeń społecznych w Polsce.
+
+ZAKRES TEMATYCZNY:
+ZAWSZE odpowiadaj TYLKO w języku polskim i WYŁĄCZNIE na tematy związane z:
+- systemem emerytalnym w Polsce (ZUS, składki, wiek emerytalny)
+- planowaniem finansowym na emeryturę (PPK, IKE, IKZE)
+- obliczaniem wysokości przyszłych świadczeń emerytalnych
+- prawem pracy w kontekście uprawnień emerytalnych
+
+NIGDY nie odpowiadaj na pytania spoza tych tematów.
+
+STYL KOMUNIKACJI:
+Tłumacz wszystko BARDZO PROSTO, jak uczniowi gimnazjum. Unikaj skomplikowanych terminów.
+Używaj prostego, przyjaznego języka i konkretnych przykładów z polskim prawem.
+
+FORMAT ODPOWIEDZI:
+NIE używaj formatowania Markdown. Pisz TYLKO zwykłym tekstem (plaintext).
+Zamiast **pogrubienia** używaj WIELKICH LITER dla podkreślenia.
+
+WYKONYWANIE OBLICZEŃ:
+Gdy użytkownik pyta o emeryturę - NATYCHMIAST użyj narzędzia calculateRetirement.
+NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
+    `;
+    
+    session.setSystemMessage(basePrompt + '\n' + getToolDescriptions());
+    
+    chatSessionRef.current = session;
+  }, []);
 
   const suggestedPrompts: SuggestedPrompt[] = [
     { id: '2', text: 'Wpływ urlopu macierzyńskiego na emeryturę' },
@@ -48,7 +84,7 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+    if (!inputValue.trim() || isLoading || !chatSessionRef.current) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -57,20 +93,32 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const aiMessageId = (Date.now() + 1).toString();
+    const aiMessage: Message = {
+      id: aiMessageId,
+      text: '',
+      isUser: false,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage, aiMessage]);
     setInputValue('');
     setIsLoading(true);
 
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: 'Dziękuję za pytanie! Jako Twój doradca emerytalny, chętnie pomogę Ci w tej kwestii. Proszę o chwilę cierpliwości, analizuję Twoją sytuację...',
-        isUser: false,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, aiMessage]);
-      setIsLoading(false);
-    }, 1000);
+    await chatSessionRef.current.streamMessage(
+      userMessage.text,
+      (chunk: string) => {
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === aiMessageId 
+              ? { ...msg, text: msg.text + chunk }
+              : msg
+          )
+        );
+      }
+    );
+    
+    setIsLoading(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -80,8 +128,8 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
     }
   };
 
-  const handleSuggestedPrompt = (prompt: string) => {
-    if (isLoading) return;
+  const handleSuggestedPrompt = async (prompt: string) => {
+    if (isLoading || !chatSessionRef.current) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -90,19 +138,31 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const aiMessageId = (Date.now() + 1).toString();
+    const aiMessage: Message = {
+      id: aiMessageId,
+      text: '',
+      isUser: false,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage, aiMessage]);
     setIsLoading(true);
 
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: 'Dziękuję za pytanie! Jako Twój doradca emerytalny, chętnie pomogę Ci w tej kwestii. Proszę o chwilę cierpliwości, analizuję Twoją sytuację...',
-        isUser: false,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, aiMessage]);
-      setIsLoading(false);
-    }, 1000);
+    await chatSessionRef.current.streamMessage(
+      prompt,
+      (chunk: string) => {
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === aiMessageId 
+              ? { ...msg, text: msg.text + chunk }
+              : msg
+          )
+        );
+      }
+    );
+    
+    setIsLoading(false);
   };
 
 
@@ -116,7 +176,7 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
 
       {/* Messages */}
       <div className="flex-1 space-y-4 p-4 overflow-y-auto">
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
             key={message.id}
             className={`chat ${message.isUser ? 'chat-end' : 'chat-start'}`}
@@ -128,20 +188,16 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
                   {index < message.text.split('\n').length - 1 && <br />}
                 </React.Fragment>
               ))}
+              {/* Show typing indicator only for the last AI message when loading */}
+              {!message.isUser && isLoading && index === messages.length - 1 && (
+                <div className="flex items-center space-x-2 mt-2">
+                  <div className="loading loading-dots loading-sm"></div>
+                  <span className="text-sm opacity-70">{chatName} pisze...</span>
+                </div>
+              )}
             </div>
           </div>
         ))}
-
-        {isLoading && (
-          <div className="chat chat-start">
-            <div className="chat-bubble">
-              <div className="flex items-center space-x-2">
-                <div className="loading loading-dots loading-sm"></div>
-                <span>{chatName} pisze...</span>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div ref={messagesEndRef} />
       </div>
@@ -153,7 +209,7 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
               {suggestedPrompts.map((prompt) => (
                 <button
                   key={prompt.id}
-                  onClick={() => handleSuggestedPrompt(prompt.text)}
+                  onClick={async () => await handleSuggestedPrompt(prompt.text)}
                   disabled={isLoading}
                   className="btn-outline btn btn-xs btn-primary"
                 >

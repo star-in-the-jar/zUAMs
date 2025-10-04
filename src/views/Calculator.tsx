@@ -12,7 +12,9 @@ const Result: React.FC = () => {
       <form className="flex flex-col gap-y-2">
         <ol>
           <li>Jesteś </li>
-          <li>Masz obecnie XX lat</li>
+          <li>
+            Masz obecnie <span className="text-secondary">XX lat</span>
+          </li>
           <li>Przejdziesz na emeryturę w wieku XX (XXXXr.)</li>
         </ol>
       </form>

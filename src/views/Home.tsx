@@ -31,7 +31,7 @@ const Home: React.FC = () => {
       return;
     }
     e.preventDefault();
-    navigate("/result");
+    navigate("/calculator");
   };
 
   return (

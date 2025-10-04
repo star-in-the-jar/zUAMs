@@ -12,11 +12,11 @@ const Result: React.FC = () => {
   const snap = useSnapshot(appState);
 
   return (
-    <div className="flex flex-col min-h-screen items-center pb-20">
-      <h1 className="mb-6 font-semibold text-primary text-4xl">
+    <div className="flex flex-col items-center pb-20 min-h-screen">
+      <h1 className="font-semibold text-primary text-3xl">
         Zakładając, że
       </h1>
-      <form className="mb-6">
+      <form className="">
         <div className="flex flex-col gap-y-4 w-full max-w-2xl">
           <SectionAgeAndRetirement />
           <div className="collapse collapse-arrow bg-primary/5 text-primary">
@@ -34,7 +34,7 @@ const Result: React.FC = () => {
           </div>
         </div>
       </form>
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 text-base p-4 px-6 rounded-full shadow-md border border-base-200 bg-white">
+      <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-l -translate-x-1/2">
         Otrzymasz emeryturę w wysokości&nbsp;
         <span className="font-bold text-primary">
           {calculatePension({

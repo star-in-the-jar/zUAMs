@@ -30,20 +30,16 @@ const SectionLeavesAndBreaks: React.FC = () => {
           <div className="form-control">
             <label className="label">
               <span className="font-medium label-text">
-                Urlopy macierzyńskie
+                Liczba urlopów macierzyńskich
               </span>
             </label>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">Weźmiesz</span>
-              <input
-                value={snap.maternityLeaves}
-                className="input-bordered w-20 input"
-                type="number"
-                min="0"
-                onChange={handleMaternityLeavesChange}
-              />
-              <span className="text-sm">urlopów macierzyńskich</span>
-            </div>
+            <input
+              value={snap.maternityLeaves}
+              className="input-bordered w-full input"
+              type="number"
+              min="0"
+              onChange={handleMaternityLeavesChange}
+            />
             <div className="label">
               <span className="label-text-alt text-base-content/60">
                 Liczba planowanych urlopów macierzyńskich w trakcie kariery
@@ -65,11 +61,6 @@ const SectionLeavesAndBreaks: React.FC = () => {
               <span className="text-sm">
                 Zamierzasz brać tyle urlopów zdrowotnych co przeciętny Polak (34
                 dni rocznie)
-              </span>
-            </div>
-            <div className="label">
-              <span className="label-text-alt text-base-content/60">
-                Średnia liczba dni chorobowych w Polsce to około 34 dni rocznie
               </span>
             </div>
           </div>

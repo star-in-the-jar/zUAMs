@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
 import SectionWorkAndSalary from "@/components/SectionWorkAndSalary";
@@ -26,6 +26,12 @@ const getRetirementYear = (age: number, retirementAge: number) => {
 
 const Result: React.FC = () => {
   const snap = useSnapshot(appState);
+
+  React.useEffect(() => {
+    if (!snap.gender) {
+      appState.gender = GENDERS.MALE;
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-center pb-20 min-h-screen">

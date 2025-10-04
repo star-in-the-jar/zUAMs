@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { solve, type SolverConfig } from './solver'
 import { calculateZusRetirement, PeriodType } from './zus'
+import { GENDERS } from '@/const/genders'
 
 describe('Non-linear Equation Solver', () => {
     it('should solve simple linear equation x - 5 = 0', () => {
@@ -103,6 +104,7 @@ describe('Non-linear Equation Solver', () => {
                         to: { year: 2060, month: 12 }, // 40 years of work
                         grossMonthlySalary: () => monthlySalary
                     }],
+                    gender: GENDERS.MALE,
                     simStartYear: 2020,
                     retirementYear: 2061,
                     retirementMonth: 1,

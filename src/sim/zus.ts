@@ -1,4 +1,6 @@
 // ZUS Retirement Calculator Types
+import type { Gender } from '@/const/genders'
+import { GENDERS } from '@/const/genders'
 
 /**
  * Period types for employment
@@ -48,6 +50,7 @@ export type EmploymentPeriod = UoPPeriod | SelfEmploymentPeriod
  */
 export type ZusRetirementConfig = {
     employmentPeriods: EmploymentPeriod[]
+    gender: Gender
     simStartYear: number
     retirementYear: number
     retirementMonth: number
@@ -67,6 +70,7 @@ export type ZusRetirementResult = {
     totalMonthsContributed: number
     totalZusAccountBalanceAtTimeOfRetirement: number
     retirementYear: number
+    isEligibleForMinimalRetirement: boolean
     /** Function that returns monthly retirement amount for given months after retirement start */
     monthlyRetirementAmount: (monthsAfterRetirementStart: number) => number
 }
@@ -181,7 +185,11 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
     // Step 1: Calculate account balance (only from employment, not studying)
     const totalZusAccountBalanceAtTimeOfRetirement = simulateZusAccumulation(config)
     
-    // Step 2: Calculate base monthly retirement
+    // Step 2: Calculate eligibility for minimal retirement
+    const requiredMonthsForMinimalRetirement = config.gender === GENDERS.MALE ? 25 * 12 : 20 * 12 // 25 years for men, 20 years for women
+    const isEligibleForMinimalRetirement = totalMonthsContributed >= requiredMonthsForMinimalRetirement
+    
+    // Step 3: Calculate base monthly retirement
     const baseMonthlyRetirement = totalZusAccountBalanceAtTimeOfRetirement / config.avgMonthsAliveAfterRetirement
     
     // Step 3: Create function that returns retirement amount for any month
@@ -204,6 +212,7 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
         totalMonthsContributed,
         totalZusAccountBalanceAtTimeOfRetirement,
         retirementYear: config.retirementYear,
+        isEligibleForMinimalRetirement,
         monthlyRetirementAmount
     }
 }

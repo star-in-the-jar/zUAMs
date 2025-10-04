@@ -4,6 +4,7 @@ import {
     ZUS_UOP_CONTRIBUTION_RATE,
     PeriodType
 } from './zus'
+import { GENDERS } from '@/const/genders'
 import type { 
     ZusRetirementConfig,
     EmploymentPeriod
@@ -20,6 +21,7 @@ describe('ZUS Retirement Calculator', () => {
 
         const config: ZusRetirementConfig = {
             employmentPeriods: [uopPeriod],
+            gender: GENDERS.MALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
@@ -55,6 +57,7 @@ describe('ZUS Retirement Calculator', () => {
 
         const config: ZusRetirementConfig = {
             employmentPeriods: [selfEmployedPeriod],
+            gender: GENDERS.FEMALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
@@ -88,6 +91,7 @@ describe('ZUS Retirement Calculator', () => {
 
         const config: ZusRetirementConfig = {
             employmentPeriods: [period1, period2],
+            gender: GENDERS.MALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
@@ -113,6 +117,7 @@ describe('ZUS Retirement Calculator', () => {
 
         const config: ZusRetirementConfig = {
             employmentPeriods: [period],
+            gender: GENDERS.MALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
@@ -141,6 +146,7 @@ describe('ZUS Retirement Calculator', () => {
 
         const config: ZusRetirementConfig = {
             employmentPeriods: [period],
+            gender: GENDERS.MALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
@@ -170,6 +176,7 @@ describe('ZUS Retirement Calculator', () => {
 
         const config: ZusRetirementConfig = {
             employmentPeriods: [period],
+            gender: GENDERS.FEMALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
@@ -183,5 +190,83 @@ describe('ZUS Retirement Calculator', () => {
 
         // Should be capped at 1 employment month + 96 studying months = 97 months
         expect(result.totalMonthsContributed).toBe(97)
+    })
+
+    it('should correctly determine minimal retirement eligibility for men (25 years)', () => {
+        const period: EmploymentPeriod = {
+            type: PeriodType.UOP,
+            from: { year: 2020, month: 1 },
+            to: { year: 2044, month: 12 }, // 25 years exactly
+            grossMonthlySalary: () => 5000
+        }
+
+        const config: ZusRetirementConfig = {
+            employmentPeriods: [period],
+            gender: GENDERS.MALE,
+            simStartYear: 2020,
+            retirementYear: 2045,
+            retirementMonth: 1,
+            avgMonthsAliveAfterRetirement: 240,
+            monthsOfStudying: 0,
+            yearlyValorizationCoef: () => 1.0,
+            yearlyRetirementValorizationMul: () => 1.0
+        }
+
+        const result = calculateZusRetirement(config)
+
+        expect(result.totalMonthsContributed).toBe(25 * 12) // 300 months
+        expect(result.isEligibleForMinimalRetirement).toBe(true)
+    })
+
+    it('should correctly determine minimal retirement eligibility for women (20 years)', () => {
+        const period: EmploymentPeriod = {
+            type: PeriodType.UOP,
+            from: { year: 2020, month: 1 },
+            to: { year: 2039, month: 12 }, // 20 years exactly
+            grossMonthlySalary: () => 5000
+        }
+
+        const config: ZusRetirementConfig = {
+            employmentPeriods: [period],
+            gender: GENDERS.FEMALE,
+            simStartYear: 2020,
+            retirementYear: 2040,
+            retirementMonth: 1,
+            avgMonthsAliveAfterRetirement: 240,
+            monthsOfStudying: 0,
+            yearlyValorizationCoef: () => 1.0,
+            yearlyRetirementValorizationMul: () => 1.0
+        }
+
+        const result = calculateZusRetirement(config)
+
+        expect(result.totalMonthsContributed).toBe(20 * 12) // 240 months
+        expect(result.isEligibleForMinimalRetirement).toBe(true)
+    })
+
+    it('should not be eligible for minimal retirement with insufficient months', () => {
+        const period: EmploymentPeriod = {
+            type: PeriodType.UOP,
+            from: { year: 2020, month: 1 },
+            to: { year: 2038, month: 12 }, // 19 years for woman (not enough)
+            grossMonthlySalary: () => 5000
+        }
+
+        const config: ZusRetirementConfig = {
+            employmentPeriods: [period],
+            gender: GENDERS.FEMALE,
+            simStartYear: 2020,
+            retirementYear: 2039,
+            retirementMonth: 1,
+            avgMonthsAliveAfterRetirement: 240,
+            monthsOfStudying: 0,
+            yearlyValorizationCoef: () => 1.0,
+            yearlyRetirementValorizationMul: () => 1.0
+        }
+
+        const result = calculateZusRetirement(config)
+
+        expect(result.totalMonthsContributed).toBe(19 * 12) // 228 months
+        expect(result.isEligibleForMinimalRetirement).toBe(false)
     })
 })

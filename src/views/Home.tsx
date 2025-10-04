@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
+import { normalizePensionValue } from "@/utils/normalizePensionValue";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -9,16 +10,17 @@ const Home: React.FC = () => {
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
+    const normalized = normalizePensionValue(val);
     if (val === "") {
       appState.pension = "";
       appState.lastValid = "";
       return;
     }
-    if (isNaN(Number(val))) {
+    if (normalized === undefined) {
       appState.pension = appState.lastValid;
     } else {
-      appState.pension = val;
-      appState.lastValid = val;
+      appState.pension = normalized;
+      appState.lastValid = normalized;
     }
   };
 
@@ -49,7 +51,11 @@ const Home: React.FC = () => {
           />
           <span>PLN</span>
         </label>
-        <button type="submit" className="btn btn-primary btn-lg">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="btn btn-primary btn-lg"
+        >
           Sprawdź
         </button>
       </form>

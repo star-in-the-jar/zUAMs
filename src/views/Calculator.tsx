@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
 import SectionAgeAndRetirement from "@/components/SectionAgeAndRetirement";
@@ -11,6 +11,12 @@ import ErrorIcon from "@mui/icons-material/Error";
 
 const Result: React.FC = () => {
   const snap = useSnapshot(appState);
+
+  React.useEffect(() => {
+    if (!snap.gender) {
+      appState.gender = GENDERS.MALE;
+    }
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen items-center pb-20">

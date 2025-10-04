@@ -29,48 +29,42 @@ const SectionSavings: React.FC = () => {
       <div className="p-4 card-body">
         <h3 className="mb-4 text-lg card-title text-primary">Oszczędności</h3>
         <div className="flex flex-col gap-y-4">
-          <div className="form-control">
+          <div className="flex flex-col gap-y-1">
             <label className="label">
               <span className="font-medium label-text">
                 Zebrane świadczenia ZUS
               </span>
             </label>
-            <div className="flex items-center gap-2">
+            <div className="input w-full">
               <input
                 value={snap.collectedZusBenefits}
-                className="input-bordered w-32 input"
+                className="grow"
                 type="number"
                 min="0"
                 onChange={handleCollectedZusBenefitsChange}
               />
-              <span className="text-sm">zł</span>
-            </div>
-            <div className="label">
-              <span className="label-text-alt text-base-content/60">
-                Suma już zebranych świadczeń w ZUS
-              </span>
+              PLN
             </div>
           </div>
-          <div className="form-control">
+          <div className="flex flex-col gap-y-1">
             <label className="label">
               <span className="font-medium label-text">
                 Dodatkowe oszczędności
               </span>
             </label>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">Odkładasz dodatkowo</span>
+            <div className="input w-full">
               <input
                 value={snap.additionalSavings}
-                className="input-bordered w-32 input"
+                className="grow"
                 type="number"
                 min="0"
                 onChange={handleAdditionalSavingsChange}
               />
-              <span className="text-sm">zł w II i III filarze (np. IKE)</span>
+              PLN
             </div>
             <div className="label">
               <span className="label-text-alt text-base-content/60">
-                Dodatkowe oszczędności emerytalne w ramach II i III filaru, np.
+                Oszczędności odłożone dodatkowo w ramach II i III filaru, np.
                 IKE, IKZE
               </span>
             </div>

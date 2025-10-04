@@ -1,5 +1,3 @@
 export * from "./inflation"
-export * from "./ppkAccumulationSim"
-export * from "./zusAccumulationSim"
-export * from "./zusRetirementSim"
 export * from "./incomeTax"
+export * from "./zus"

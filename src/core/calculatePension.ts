@@ -1,4 +1,4 @@
-import { GENDERS, type Gender } from "@/const/genders";
+import { type Gender } from "@/const/genders";
 
 type PensionArgs = {
   age: number;
@@ -7,13 +7,9 @@ type PensionArgs = {
 };
 
 export const calculatePension = (pensionArgs: PensionArgs): number => {
-  const { age, gender, retirementAge } = pensionArgs;
+  const { age, retirementAge } = pensionArgs;
 
-  let pensionResult = 1000 + (retirementAge - age) * 100;
-
-  if (gender === GENDERS.FEMALE) {
-    pensionResult /= 2;
-  }
+  const pensionResult = 1000 + (retirementAge - age) * 100;
 
   return pensionResult;
 };

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
 import { normalizePensionValue } from "@/utils/normalizePensionValue";
+import GenderButtons from "@/components/GenderButtons";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +29,8 @@ const Home: React.FC = () => {
     if (
       snap.pension === "" ||
       isNaN(Number(snap.pension)) ||
-      Number(snap.pension) <= 0
+      Number(snap.pension) <= 0 ||
+      !snap.gender
     ) {
       return;
     }
@@ -39,8 +41,10 @@ const Home: React.FC = () => {
   return (
     <section className="flex flex-col items-center justify-center h-full gap-y-4 mt-8">
       <h1 className="text-4xl font-semibold text-center">
-        Jaką chcesz mieć emeryturę?
+        Kalkulator emerytury
       </h1>
+      <GenderButtons />
+
       <form onSubmit={handleSubmit} className="flex gap-x-1 items-center">
         <label className="input input-lg">
           <input
@@ -51,6 +55,7 @@ const Home: React.FC = () => {
           />
           <span>PLN</span>
         </label>
+
         <button
           type="button"
           onClick={handleSubmit}

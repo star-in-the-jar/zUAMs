@@ -4,6 +4,7 @@ import Home from "@/views/Home";
 import Calculator from "@/views/Calculator";
 import Layout from "@/components/Layout";
 import LogoZeus from "@/components/LogoZeus";
+import PlanningFuture from "./views/FuturePlanning";
 
 function App() {
   return (
@@ -13,12 +14,13 @@ function App() {
       </header>
       <main className="flex flex-col min-h-screen">
         <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/calculator" element={<Calculator />} />
-          </Routes>
-        </Layout>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/calculator" element={<Calculator />} />
+              <Route path="/future-planning" element={<PlanningFuture />} />
+            </Routes>
+          </Layout>
         </BrowserRouter>
       </main>
     </div>

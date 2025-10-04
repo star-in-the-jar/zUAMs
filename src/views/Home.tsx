@@ -23,7 +23,11 @@ const Home: React.FC = () => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    if (snap.pension === "" || isNaN(Number(snap.pension)) || Number(snap.pension) <= 0) {
+    if (
+      snap.pension === "" ||
+      isNaN(Number(snap.pension)) ||
+      Number(snap.pension) <= 0
+    ) {
       return;
     }
     e.preventDefault();
@@ -45,10 +49,7 @@ const Home: React.FC = () => {
           />
           <span>PLN</span>
         </label>
-        <button
-          type="submit"
-          className="btn btn-primary btn-lg"
-        >
+        <button type="submit" className="btn btn-primary btn-lg">
           Sprawdź
         </button>
       </form>

@@ -82,7 +82,7 @@ const Layout: React.FC<LayoutProps> = ({
           aria-label="close sidebar"
           className="drawer-overlay"
         />
-        <ul className="z-50 bg-base-200 p-4 w-80 h-full min-h-screen text-base-content menu">
+        <ul className="z-50 bg-base-200 p-4 w-140 h-full min-h-screen text-base-content menu">
             <Assistant chatName="Zeus" />
         </ul>
       </div>

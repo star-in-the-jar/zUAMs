@@ -35,10 +35,8 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const suggestedPrompts: SuggestedPrompt[] = [
-    { id: '1', text: 'Jak zwiększyć wysokość emerytury?' },
     { id: '2', text: 'Wpływ urlopu macierzyńskiego na emeryturę' },
     { id: '3', text: 'Kiedy najlepiej przejść na emeryturę?' },
-    { id: '4', text: 'Jak obliczyć przyszłą emeryturę?' },
   ];
 
   const scrollToBottom = () => {

@@ -1,16 +1,18 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/views/Home";
-import Result from "@/views/Result";
+import Calculator from "@/views/Calculator";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/result" element={<Result />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="px-32 py-16 min-h-screen flex flex-col">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/calculator" element={<Calculator />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 

@@ -2,13 +2,13 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/views/Home";
 import Calculator from "@/views/Calculator";
-import LogoZus from "@/components/LogoZus";
+import LogoZeus from "@/components/LogoZeus";
 
 function App() {
   return (
     <div className="px-32 py-16 min-h-screen">
       <header className="flex items-center mb-16">
-        <LogoZus />
+        <LogoZeus />
       </header>
       <main className=" flex flex-col">
         <BrowserRouter>

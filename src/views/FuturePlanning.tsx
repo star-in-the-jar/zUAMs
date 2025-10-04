@@ -48,7 +48,6 @@ const scenarios: Scenario[] = [
 const PlanningFuture: React.FC = () => {
   const snap = useSnapshot(appState);
 
-  // Stan dla oczekiwanej emerytury (początkowo np. 6500 zł)
   const [expectedPension, setExpectedPension] = useState<number>(6500);
 
   const currentPension = calculatePension({
@@ -65,16 +64,13 @@ const PlanningFuture: React.FC = () => {
     return currentYear + yearsToRetirement;
   }
 
-  // Funkcja dynamicznie obliczająca kolor na podstawie oczekiwań
-  // Zastosowano Math.round(), aby zapewnić poprawną równość (==)
   const getColorClass = (value: number) => {
     const roundedValue = Math.round(value);
     const roundedExpected = Math.round(expectedPension);
 
-    if (roundedValue > roundedExpected) return "text-success"; // Zielony
-    if (roundedValue < roundedExpected) return "text-error"; // Czerwony
+    if (roundedValue > roundedExpected) return "text-success";
+    if (roundedValue < roundedExpected) return "text-error";
 
-    // Jeśli równe, używamy domyślnego koloru treści (czarny/ciemny)
     return "text-base-content";
   };
 
@@ -90,13 +86,10 @@ const PlanningFuture: React.FC = () => {
   };
 
   const ScenarioColumn: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
-    // 1. PO ZUS: Bazowa + Zysk z ZUS
     const pensionAfterZus = currentPension + scenario.retirementIncrease;
 
-    // 2. PO OSZCZĘDNOŚCIACH (sam zysk z obligacji)
     const pensionAfterBondsOnly = currentPension + scenario.bondIncrease;
 
-    // 3. ŁĄCZNIE: ZUS + Obligacje
     const finalPension = getFinalPension(scenario);
 
     const finalRetirementYear = getRetirementYear(
@@ -104,7 +97,6 @@ const PlanningFuture: React.FC = () => {
       snap.retirementAge + scenario.years
     );
 
-    // Dynamiczne kolory
     const colorAfterZus = getColorClass(pensionAfterZus);
     const colorAfterBondsOnly = getColorClass(pensionAfterBondsOnly);
     const colorFinal = getColorClass(finalPension);
@@ -117,7 +109,6 @@ const PlanningFuture: React.FC = () => {
             {scenario.label}
           </h2>
 
-          {/* Dłuższa Praca (ZUS) */}
           <div className="stats stats-vertical shadow bg-base-200 mb-4">
             <div className="stat place-items-center p-3">
               <div className="stat-title flex items-center text-info">
@@ -142,7 +133,6 @@ const PlanningFuture: React.FC = () => {
               </div>
             </div>
 
-            {/* Kwota po dodaniu zysku z ZUS */}
             <div className="stat place-items-center p-3 border-t border-primary/20">
               <div className="stat-title text-base-content">PO ZYSKU ZUS:</div>
               <div className={`stat-value text-3xl font-bold ${colorAfterZus}`}>
@@ -151,14 +141,13 @@ const PlanningFuture: React.FC = () => {
             </div>
           </div>
 
-          {/* Odkładanie w Obligacjach */}
           <div className="stats stats-vertical shadow bg-base-200">
             <div className="stat place-items-center p-3">
               <div className="stat-title flex items-center text-info">
                 <CurrencyDollarIcon className="w-5 h-5 mr-1" />
                 Miesięczne oszczędności
               </div>
-              <div className="stat-value text-accent">
+              <div className="stat-value text-success">
                 {scenario.bondSavings} zł
               </div>
             </div>
@@ -170,7 +159,6 @@ const PlanningFuture: React.FC = () => {
               </div>
             </div>
 
-            {/* Kwota po dodaniu samego zysku z OSZCZĘDNOŚCI (ignorując ZUS) */}
             <div className="stat place-items-center p-3 border-t border-primary/20">
               <div className="stat-title text-base-content">
                 PO ZYSKU Z OSZCZĘDNOŚCI:
@@ -184,7 +172,6 @@ const PlanningFuture: React.FC = () => {
           </div>
         </div>
 
-        {/* PODSUMOWANIE (Stopka karty) - Używa koloru łącznej kwoty */}
         <div className="card-actions justify-center p-4 bg-base-300">
           <h3 className="text-xl font-bold text-base-content/80">
             ŁĄCZNIE MIESIĘCZNIE:
@@ -202,15 +189,32 @@ const PlanningFuture: React.FC = () => {
   const colorCurrent = getColorClass(currentPension);
 
   return (
-    <div className="p-6 bg-base-200 min-h-screen">
+    <div className="p-6 bg-base-200 min-h-screen rounded-2xl">
       <h1 className="text-4xl font-bold mb-8 text-center text-primary border-b-4 border-primary/50 pb-3">
-        Planowanie Twojej emerytury
+        Pracując dłużej:
       </h1>
+
+      <div className="text-center mb-10">
+        <div className="flex flex-col items-center justify-center">
+          <div className="badge badge-lg badge-info p-5 text-2xl font-bold order-first mb-3">
+            Twoja obecna estymacja bazowa
+          </div>
+          <div
+            className={`text-6xl font-extrabold mt-2 bg-base-300 p-4 inline-block rounded-box shadow-inner ${colorCurrent}`}
+          >
+            {Math.round(currentPension)} zł/mc
+          </div>
+        </div>
+        <p className="text-base-content/70 mt-1">
+          Przejście na emeryturę w {snap.retirementAge} roku życia (
+          {baseRetirementYear} r.)
+        </p>
+      </div>
 
       <div className="text-center mb-10 card p-6 bg-base-100 shadow-lg max-w-lg mx-auto">
         <h2 className="text-xl font-semibold mb-3 text-info flex items-center justify-center">
           <HomeIcon className="w-6 h-6 mr-2" />
-          Moje Oczekiwania na Starość
+          Sprawdź dla nowej kwoty:
         </h2>
         <div className="form-control w-full max-w-xs mx-auto">
           <label className="input-group input-group-lg">
@@ -235,28 +239,13 @@ const PlanningFuture: React.FC = () => {
         </p>
       </div>
 
-      <div className="text-center mb-10">
-        <div className="badge badge-lg badge-info p-3 text-lg font-semibold">
-          Twoja obecna estymacja bazowa
-        </div>
-        <div
-          className={`text-6xl font-extrabold mt-2 bg-base-300 p-4 inline-block rounded-box shadow-inner ${colorCurrent}`}
-        >
-          {Math.round(currentPension)} zł/mc
-        </div>
-        <p className="text-base-content/70 mt-1">
-          Przejście na emeryturę w {snap.retirementAge} roku życia (
-          {baseRetirementYear} r.)
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {scenarios.map((scenario) => (
           <ScenarioColumn key={scenario.years} scenario={scenario} />
         ))}
       </div>
 
-      <div className="alert alert-warning mt-10 shadow-lg max-w-4xl mx-auto">
+      <div className="alert alert-warning mt-10 shadow-lg w-fit mx-auto font-semibold">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="stroke-current shrink-0 h-6 w-6"
@@ -270,10 +259,10 @@ const PlanningFuture: React.FC = () => {
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.3 16c-.77 1.333.192 3 1.732 3z"
           />
         </svg>
-        <span>
+
+        <span className="text-center">
           Uwaga: Powyższe kwoty są orientacyjne i służą wyłącznie celom
-          demonstracyjnym. Dokładne wyliczenia wymagają uwzględnienia inflacji,
-          stopy zwrotu obligacji i indywidualnego stażu pracy.
+          demonstracyjnym.
         </span>
       </div>
     </div>

@@ -7,9 +7,9 @@ import { RETIREMENT_AGE } from "@/const/age";
 function getGenderLabel(gender: Gender) {
   switch (gender) {
     case GENDERS.MALE:
-      return "Mężczyzna";
+      return "Mężczyzną";
     case GENDERS.FEMALE:
-      return "Kobieta";
+      return "Kobietą";
     default:
       return "Nieznana płeć";
   }

@@ -37,9 +37,9 @@ const Home: React.FC = () => {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-[70vh] gap-8">
-      <h1 className="text-4xl font-bold text-center mb-6">
-        Jaka chcesz mieć emeryturę?
+    <section className="flex flex-col items-center justify-center h-full gap-y-4 mt-8">
+      <h1 className="text-4xl font-semibold text-center">
+        Jaką chcesz mieć emeryturę?
       </h1>
       <form onSubmit={handleSubmit} className="flex gap-x-1 items-center">
         <label className="input input-lg">

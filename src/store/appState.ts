@@ -7,6 +7,7 @@ export type AppState = {
   gender: Gender | undefined;
   age: number;
   retirementAge: number;
+  salary?: number;
 };
 
 // Global app state for pension and related values
@@ -16,4 +17,5 @@ export const appState = proxy<AppState>({
   gender: undefined,
   age: 20,
   retirementAge: 75,
+  salary: undefined,
 });

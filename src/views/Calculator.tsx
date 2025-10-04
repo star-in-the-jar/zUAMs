@@ -4,6 +4,7 @@ import { appState } from "@/store/appState";
 import GenderButtons from "@/components/GenderButtons";
 import { calculatePension } from "@/core/calculatePension";
 import { GENDERS } from "@/const/genders";
+import { MIN_AGE, MAX_AGE } from "@/const/age";
 
 const getListItemClassNames = () => {
   return "flex flex-row gap-x-2 items-center";
@@ -18,7 +19,7 @@ const getRetirementYear = (age: number, retirementAge: number) => {
 const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const val = e.target.value;
   const num = Number(val);
-  if (!isNaN(num) && num > 0 && num < 120) {
+  if (!isNaN(num) && num > MIN_AGE && num < MAX_AGE) {
     appState.age = num;
     appState.retirementAge = Math.max(appState.retirementAge, num);
   }
@@ -27,7 +28,7 @@ const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 const handleRetirementAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const val = e.target.value;
   const num = Number(val);
-  if (!isNaN(num) && num > 0 && num < 120) {
+  if (!isNaN(num) && num > MIN_AGE && num < MAX_AGE) {
     appState.retirementAge = num;
     appState.age = Math.min(appState.age, num);
   }
@@ -72,7 +73,7 @@ const Result: React.FC = () => {
       </form>
       <h2 className="text-2xl">
         Otrzymasz emeryturę w wysokości{" "}
-        <span className="text-primary font-medium">
+        <span className="text-primary font-bold">
           {calculatePension({
             age: snap.age,
             retirementAge: snap.retirementAge,

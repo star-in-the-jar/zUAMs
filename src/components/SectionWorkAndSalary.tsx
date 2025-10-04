@@ -1,6 +1,7 @@
 import React from "react";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
+import UnchangedField from "./UnchangedField";
 
 const handleEmploymentTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   appState.employmentType = e.target.value as "UoP" | "JDG";
@@ -25,37 +26,39 @@ const SectionWorkAndSalary: React.FC = () => {
           Praca i zarobki
         </h3>
         <div className="flex flex-col gap-y-4">
-          <div className="flex flex-col gap-y-1">
-            <label className="label">
-              <span className="font-medium label-text">Typ zatrudnienia</span>
-            </label>
-            <div className="join w-full">
-              <input
-                className="join-item btn w-1/2"
-                type="radio"
-                name="employmentType"
-                value="UoP"
-                checked={snap.employmentType === "UoP"}
-                onChange={handleEmploymentTypeChange}
-                aria-label="UoP"
-              />
-              <input
-                className="join-item btn w-1/2"
-                type="radio"
-                name="employmentType"
-                value="JDG"
-                checked={snap.employmentType === "JDG"}
-                onChange={handleEmploymentTypeChange}
-                aria-label="JDG"
-              />
+          <UnchangedField field="employmentType">
+            <div className="flex flex-col gap-y-1">
+              <label className="label">
+                <span className="font-medium label-text">Typ zatrudnienia</span>
+              </label>
+              <div className="join w-full">
+                <input
+                  className="join-item btn w-1/2"
+                  type="radio"
+                  name="employmentType"
+                  value="UoP"
+                  checked={snap.employmentType === "UoP"}
+                  onChange={handleEmploymentTypeChange}
+                  aria-label="UoP"
+                />
+                <input
+                  className="join-item btn w-1/2"
+                  type="radio"
+                  name="employmentType"
+                  value="JDG"
+                  checked={snap.employmentType === "JDG"}
+                  onChange={handleEmploymentTypeChange}
+                  aria-label="JDG"
+                />
+              </div>
+              <div className="label">
+                <span className="label-text-alt text-base-content/60">
+                  Umowa o pracę (UoP) lub Jednoosobowa działalność gospodarcza
+                  (JDG)
+                </span>
+              </div>
             </div>
-            <div className="label">
-              <span className="label-text-alt text-base-content/60">
-                Umowa o pracę (UoP) lub Jednoosobowa działalność gospodarcza
-                (JDG)
-              </span>
-            </div>
-          </div>
+          </UnchangedField>
           <div className="flex flex-col gap-y-1">
             <label className="label">
               <span className="font-medium label-text">

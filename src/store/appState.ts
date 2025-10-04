@@ -18,8 +18,25 @@ export type AppState = {
   collectedZusBenefits: number;
 };
 
+export const wasAppStateFieldChanged: Record<keyof AppState, boolean> = {
+  pension: false,
+  lastValid: false,
+  gender: false,
+  age: false,
+  retirementAge: false,
+  salary: false,
+  // Advanced options
+  maternityLeaves: false,
+  monthlyGrossSalary: false,
+  employmentType: false,
+  averageSickDays: false,
+  additionalSavings: false,
+  currentMonthlySalary: false,
+  collectedZusBenefits: false,
+};
+
 // Global app state for pension and related values
-export const DEFAULT_APP_STATE: AppState = proxy<AppState>({
+export const appState = proxy<AppState>({
   pension: 0,
   lastValid: "",
   gender: undefined,
@@ -34,22 +51,4 @@ export const DEFAULT_APP_STATE: AppState = proxy<AppState>({
   additionalSavings: 0,
   currentMonthlySalary: 0,
   collectedZusBenefits: 0,
-});
-
-// Global app state for pension and related values
-export const appState = proxy<AppState>({
-  pension: DEFAULT_APP_STATE.pension,
-  lastValid: DEFAULT_APP_STATE.lastValid,
-  gender: DEFAULT_APP_STATE.gender,
-  age: DEFAULT_APP_STATE.age,
-  retirementAge: DEFAULT_APP_STATE.retirementAge,
-  salary: DEFAULT_APP_STATE.salary,
-  // Advanced options defaults
-  maternityLeaves: DEFAULT_APP_STATE.maternityLeaves,
-  monthlyGrossSalary: DEFAULT_APP_STATE.monthlyGrossSalary,
-  employmentType: DEFAULT_APP_STATE.employmentType,
-  averageSickDays: DEFAULT_APP_STATE.averageSickDays,
-  additionalSavings: DEFAULT_APP_STATE.additionalSavings,
-  currentMonthlySalary: DEFAULT_APP_STATE.currentMonthlySalary,
-  collectedZusBenefits: DEFAULT_APP_STATE.collectedZusBenefits,
 });

@@ -1,12 +1,14 @@
 import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "@/views/Home";
 
 function App() {
   return (
-    <>
-      <button className="btn btn-primary">Lorem</button>
-      <button className="btn btn-secondary">Lorem</button>
-      <button className="btn btn-accent">Lorem</button>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

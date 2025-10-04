@@ -1,28 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSnapshot } from "valtio";
+import { appState } from "@/store/appState";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [pension, setPension] = useState<string>("");
-  const [lastValid, setLastValid] = useState<string>("");
+  const snap = useSnapshot(appState);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     if (val === "") {
-      setPension("");
-      setLastValid("");
+      appState.pension = "";
+      appState.lastValid = "";
       return;
     }
     if (isNaN(Number(val))) {
-      setPension(lastValid);
+      appState.pension = appState.lastValid;
     } else {
-      setPension(val);
-      setLastValid(val);
+      appState.pension = val;
+      appState.lastValid = val;
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    if (pension === "" || isNaN(Number(pension)) || Number(pension) <= 0) {
+    if (snap.pension === "" || isNaN(Number(snap.pension)) || Number(snap.pension) <= 0) {
       return;
     }
     e.preventDefault();
@@ -37,7 +38,7 @@ const Home: React.FC = () => {
       <form onSubmit={handleSubmit} className="flex gap-x-1 items-center">
         <label className="input input-lg">
           <input
-            value={pension}
+            value={snap.pension}
             className="grow"
             placeholder="3000"
             onInput={handleInput}
@@ -45,8 +46,7 @@ const Home: React.FC = () => {
           <span>PLN</span>
         </label>
         <button
-          type="button"
-          onClick={handleSubmit}
+          type="submit"
           className="btn btn-primary btn-lg"
         >
           Sprawdź

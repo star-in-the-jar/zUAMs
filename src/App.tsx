@@ -4,7 +4,8 @@ import Home from "@/views/Home";
 import Calculator from "@/views/Calculator";
 import Layout from "@/components/Layout";
 import LogoZeus from "@/components/LogoZeus";
-import PlanningFuture from "./views/FuturePlanning";
+import ZusScenarioView from "./views/ZusScenarioView";
+import SavingsScenarioView from "./views/SavingsScenarioView";
 
 function App() {
   return (
@@ -18,7 +19,11 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/calculator" element={<Calculator />} />
-              <Route path="/future-planning" element={<PlanningFuture />} />
+              <Route path="/zus-scenario-view" element={<ZusScenarioView />} />
+              <Route
+                path="/savings-scenario-view"
+                element={<SavingsScenarioView />}
+              />
             </Routes>
           </Layout>
         </BrowserRouter>

@@ -5,5 +5,5 @@ export const RETIREMENT_AGE = {
   [GENDERS.FEMALE]: 60,
 } as const;
 
-export const MIN_AGE = 20;
+export const MIN_AGE = 16;
 export const MAX_AGE = 120;

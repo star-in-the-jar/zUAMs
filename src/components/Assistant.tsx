@@ -1,0 +1,193 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Send } from '@mui/icons-material';
+
+interface Message {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
+interface SuggestedPrompt {
+  id: string;
+  text: string;
+}
+
+const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: 'Cześć! Jak mogę Ci pomóc w przygotowaniu się do emerytury?',
+      isUser: false,
+      timestamp: new Date(),
+    },
+    {
+      id: '2',
+      text: 'Co zrobić, żeby mieć emeryturę w wysokości 3500 PLN?',
+      isUser: true,
+      timestamp: new Date(),
+    },
+  ]);
+
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const suggestedPrompts: SuggestedPrompt[] = [
+    { id: '1', text: 'Jak zwiększyć wysokość emerytury?' },
+    { id: '2', text: 'Wpływ urlopu macierzyńskiego na emeryturę' },
+    { id: '3', text: 'Kiedy najlepiej przejść na emeryturę?' },
+    { id: '4', text: 'Jak obliczyć przyszłą emeryturę?' },
+  ];
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: inputValue.trim(),
+      isUser: true,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
+
+    setTimeout(() => {
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Dziękuję za pytanie! Jako Twój doradca emerytalny, chętnie pomogę Ci w tej kwestii. Proszę o chwilę cierpliwości, analizuję Twoją sytuację...',
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleSuggestedPrompt = (prompt: string) => {
+    if (isLoading) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: prompt,
+      isUser: true,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+
+    setTimeout(() => {
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Dziękuję za pytanie! Jako Twój doradca emerytalny, chętnie pomogę Ci w tej kwestii. Proszę o chwilę cierpliwości, analizuję Twoją sytuację...',
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
+    }, 1000);
+  };
+
+
+  return (
+    <div className="flex flex-col justify-between h-full">
+      {/* Header */}
+      <div className="p-4 border-b border-base-300">
+        <h3 className="font-semibold text-base-content text-lg">{chatName}</h3>
+        <h4 className="font-semibold text-xs text-base-content/70">Twój boski doradca emerytalny</h4>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 space-y-4 p-4 overflow-y-auto">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`chat ${message.isUser ? 'chat-end' : 'chat-start'}`}
+          >
+            <div className={`chat-bubble ${message.isUser ? 'bg-primary text-primary-content' : ''}`}>
+              {message.text.split('\n').map((line, index) => (
+                <React.Fragment key={index}>
+                  {line}
+                  {index < message.text.split('\n').length - 1 && <br />}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {isLoading && (
+          <div className="chat chat-start">
+            <div className="chat-bubble">
+              <div className="flex items-center space-x-2">
+                <div className="loading loading-dots loading-sm"></div>
+                <span>{chatName} pisze...</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Suggested Prompts */}
+      <div className="p-4 border-t border-base-300">
+        <div className="mb-3">
+          <div className="flex flex-wrap gap-2">
+              {suggestedPrompts.map((prompt) => (
+                <button
+                  key={prompt.id}
+                  onClick={() => handleSuggestedPrompt(prompt.text)}
+                  disabled={isLoading}
+                  className="btn-outline btn btn-xs btn-primary"
+                >
+                  {prompt.text}
+                </button>
+              ))}
+          </div>
+        </div>
+
+        {/* Input */}
+        <div className="flex items-center space-x-2">
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Napisz swoją wiadomość..."
+            className="flex-1 input-bordered input input-sm"
+            disabled={isLoading}
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={!inputValue.trim() || isLoading}
+            className="btn btn-primary btn-sm"
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Assistant;

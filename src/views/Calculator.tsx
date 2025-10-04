@@ -7,7 +7,7 @@ import { GENDERS } from "@/const/genders";
 import { MIN_AGE, MAX_AGE } from "@/const/age";
 
 const getListItemClassNames = () => {
-  return "flex flex-row gap-x-2 items-center";
+  return "flex flex-row gap-x-2 items-center justify-between";
 };
 
 const getRetirementYear = (age: number, retirementAge: number) => {
@@ -44,19 +44,21 @@ const Result: React.FC = () => {
       </h1>
 
       <form className="mb-6">
-        <ol className="flex flex-col gap-y-4">
+        <ol className="flex flex-col gap-y-4 max-w-md w-full">
           <li className={getListItemClassNames()}>
             Jesteś <GenderButtons />
           </li>
           <li className={getListItemClassNames()}>
             Masz obecnie
-            <input
-              value={snap.age}
-              className="input max-w-16"
-              type="number"
-              onChange={handleAgeChange}
-            />
-            lat
+            <div className="flex flex-row gap-x-2 items-center">
+              <input
+                value={snap.age}
+                className="input max-w-16"
+                type="number"
+                onChange={handleAgeChange}
+              />
+              lat
+            </div>
           </li>
           <li className={getListItemClassNames()}>
             Przejdziesz na emeryturę w wieku

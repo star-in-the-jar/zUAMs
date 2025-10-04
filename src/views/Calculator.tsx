@@ -14,7 +14,7 @@ const Result: React.FC = () => {
   return (
     <div className="flex flex-col items-center pb-20 min-h-screen">
       <h1 className="font-semibold text-primary text-3xl">
-        Zakładając, że
+        Przyjmując założenia:
       </h1>
       <form className="">
         <div className="flex flex-col gap-y-4 w-full max-w-2xl">
@@ -34,6 +34,9 @@ const Result: React.FC = () => {
           </div>
         </div>
       </form>
+      <span className="p-6 text-xs text-base-content/70">
+        Wszystkie wyświetlane i oczekiwane kwoty uwzględniają inflację i prezentują wartość nabywczą pieniądza z dnia dzisiejszego.
+      </span>
       <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-l -translate-x-1/2">
         Otrzymasz emeryturę w wysokości&nbsp;
         <span className="font-bold text-primary">

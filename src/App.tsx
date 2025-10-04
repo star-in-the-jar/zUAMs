@@ -11,7 +11,7 @@ function App() {
       <header className="flex items-center mb-16">
         <LogoZeus />
       </header>
-      <main className="flex flex-col px-32 py-16 min-h-screen">
+      <main className="flex flex-col min-h-screen">
         <BrowserRouter>
         <Layout>
           <Routes>

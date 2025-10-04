@@ -2,7 +2,7 @@ import { GENDERS, type Gender } from "@/const/genders";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
 import { classMerge } from "@/utils/classMerge";
-import { RETIREMENT_AGE } from "@/const/retirementAge";
+import { RETIREMENT_AGE } from "@/const/age";
 
 function getGenderLabel(gender: Gender) {
   switch (gender) {

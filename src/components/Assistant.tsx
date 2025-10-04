@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send } from '@mui/icons-material';
 import { OpenAIChatSession } from '@/ai';
 import { getToolDescriptions } from '@/aiTools';
+import { useSnapshot } from 'valtio';
+import { appState, type AppState } from '@/store/appState';
+import { GENDERS } from '@/const/genders';
 
 interface Message {
   id: string;
@@ -16,6 +19,24 @@ interface SuggestedPrompt {
 }
 
 const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
+  const snap: AppState = useSnapshot(appState);
+
+  const userInfoPrompt = `Użytkownik ma ${snap.age} lat${
+    snap.gender ? `, jest ${snap.gender === GENDERS.MALE ? 'mężczyzną' : 'kobietą'}` : ''
+  } i planuje przejść na emeryturę w wieku ${snap.retirementAge} lat.${
+    snap.monthlyGrossSalary > 0 ? ` Jego miesięczne wynagrodzenie brutto wynosi ${snap.monthlyGrossSalary} zł.` : ''
+  }${
+    snap.currentMonthlySalary > 0 ? ` Obecnie zarabia ${snap.currentMonthlySalary} zł brutto miesięcznie.` : ''
+  } Jest zatrudniony na umowę ${snap.employmentType === 'UoP' ? 'o pracę' : 'B2B (JDG)'}.${
+    snap.maternityLeaves > 0 ? ` Ma ${snap.maternityLeaves} miesięcy urlopu macierzyńskiego.` : ''
+  }${
+    !snap.averageSickDays ? ` Nie uwzględnia średniej liczby dni chorobowych.` : ''
+  }${
+    snap.additionalSavings > 0 ? ` Odkłada dodatkowo ${snap.additionalSavings} zł w II i III filarze.` : ''
+  }${
+    snap.collectedZusBenefits > 0 ? ` Suma już zebranych świadczeń w ZUS wynosi ${snap.collectedZusBenefits} zł.` : ''
+  }`.trim().replace(/\s+/g, ' ');
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -38,10 +59,10 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
       temperature: 0.3,
       maxTokens: 1000,
     });
-    
+
     // Set system message for retirement advisor
     const basePrompt = `
-Jesteś Zeus - specjalistą ds. emerytur i ubezpieczeń społecznych w Polsce.
+Jesteś Zeus - specjalista ds. emerytur i ubezpieczeń społecznych w Polsce.
 
 ZAKRES TEMATYCZNY:
 ZAWSZE odpowiadaj TYLKO w języku polskim i WYŁĄCZNIE na tematy związane z:
@@ -53,26 +74,26 @@ ZAWSZE odpowiadaj TYLKO w języku polskim i WYŁĄCZNIE na tematy związane z:
 NIGDY nie odpowiadaj na pytania spoza tych tematów.
 
 STYL KOMUNIKACJI:
-Tłumacz wszystko BARDZO PROSTO, jak uczniowi gimnazjum. Unikaj skomplikowanych terminów.
-Używaj prostego, przyjaznego języka i konkretnych przykładów z polskim prawem.
+Tłumacz wszystko BARDZO PROSTO, jak 15 latkowi. Unikaj skomplikowanych terminów.
+Używaj prostego, przyjaznego języka i konkretnych przykładów z polskim prawem. Zawsze bierz pod uwagę tylko najnowsze założenia dotyczące użytownika.
 
 FORMAT ODPOWIEDZI:
 NIE używaj formatowania Markdown. Pisz TYLKO zwykłym tekstem (plaintext).
-Zamiast **pogrubienia** używaj WIELKICH LITER dla podkreślenia.
+Zamiast **pogrubienia** używaj WIELKICH LITER dla podkreślenia. Odpowiadaj króto i rzeczowo.
 
 WYKONYWANIE OBLICZEŃ:
 Gdy użytkownik pyta o emeryturę - NATYCHMIAST użyj narzędzia calculateRetirement.
 NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
     `;
-    
+
     session.setSystemMessage(basePrompt + '\n' + getToolDescriptions());
-    
+
     chatSessionRef.current = session;
   }, []);
 
   const suggestedPrompts: SuggestedPrompt[] = [
-    { id: '2', text: 'Wpływ urlopu macierzyńskiego na emeryturę' },
-    { id: '3', text: 'Kiedy najlepiej przejść na emeryturę?' },
+    { id: '2', text: 'O ile zmniejszy mi się emerytura jeśli pójdę na macierzyński?' },
+    { id: '3', text: 'Kiedy przejść na emeryturę?' },
   ];
 
   const scrollToBottom = () => {
@@ -108,16 +129,16 @@ NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
     await chatSessionRef.current.streamMessage(
       userMessage.text,
       (chunk: string) => {
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.id === aiMessageId 
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === aiMessageId
               ? { ...msg, text: msg.text + chunk }
               : msg
           )
         );
       }
     );
-    
+
     setIsLoading(false);
   };
 
@@ -150,18 +171,18 @@ NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
     setIsLoading(true);
 
     await chatSessionRef.current.streamMessage(
-      prompt,
+      prompt + '\n' + userInfoPrompt,
       (chunk: string) => {
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.id === aiMessageId 
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === aiMessageId
               ? { ...msg, text: msg.text + chunk }
               : msg
           )
         );
       }
     );
-    
+
     setIsLoading(false);
   };
 
@@ -192,7 +213,7 @@ NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
               {!message.isUser && isLoading && index === messages.length - 1 && (
                 <div className="flex items-center space-x-2 mt-2">
                   <div className="loading loading-dots loading-sm"></div>
-                  <span className="text-sm opacity-70">{chatName} pisze...</span>
+                  <span className="opacity-70 text-sm">{chatName} pisze...</span>
                 </div>
               )}
             </div>

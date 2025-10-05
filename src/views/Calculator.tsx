@@ -9,13 +9,13 @@ import { GENDERS } from "@/const/genders";
 import ErrorIcon from "@mui/icons-material/Error";
 import { MEDIAN_GROSS_SALARIES } from "@/const/salary";
 import ZusScenarioView from "./ZusScenarioView";
+import SavingsScenarioView from "./SavingsScenarioView";
 
 const Result: React.FC = () => {
   const snap = useSnapshot(appState);
 
   const getAlertText = () => {
-    const prefixText =
-      "Pola oznaczone kolorem żółtym są mają domyślne wartości";
+    const prefixText = "Pola oznaczone kolorem żółtym mają domyślne wartości";
     const suffixText = "i mogą być zmienione";
     let middleText;
     switch (snap.gender) {
@@ -54,6 +54,7 @@ const Result: React.FC = () => {
 
         <form className="mb-6">
           <div className="flex flex-col gap-y-4 w-full">
+            {/* 1. WIĘCEJ OPCJI (URLOP/OSZCZĘDNOŚCI) */}
             <div className="collapse collapse-arrow bg-primary/5 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
@@ -66,14 +67,35 @@ const Result: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* 2. SCENARIUSZE ZUS */}
+            <div className="collapse collapse-arrow bg-primary/5 text-primary mt-6">
+              <input type="checkbox" className="collapse-toggle" />
+              <div className="collapse-title font-medium text-xl">
+                Scenariusze ZUS
+              </div>
+              <div className="collapse-content">
+                <ZusScenarioView />
+              </div>
+            </div>
+
+            {/* 3. SCENARIUSZE OSZCZĘDNOŚCI (POPRAWIONY BLOK) */}
+            <div className="collapse collapse-arrow bg-primary/5 text-primary mt-6">
+              <input type="checkbox" className="collapse-toggle" />
+              <div className="collapse-title font-medium text-xl">
+                Scenariusze Oszczędności
+              </div>
+              <div className="collapse-content">
+                <SavingsScenarioView />
+              </div>
+            </div>
           </div>
         </form>
         <div className="mb-6 text-xs text-base-content/70">
-          Wszystkie podane i oczekiwane wartości uwzględniają inflację. Należy traktować podane wartości jako siłę nabywczą na dzień dzisiejszy.
+          Wszystkie podane i oczekiwane wartości uwzględniają inflację. Należy
+          traktować podane wartości jako siłę nabywczą na dzień dzisiejszy.
         </div>
-        <span>
-
-        </span>
+        <span></span>
 
         {/* Dodajemy nowy komponent w rozwijanej sekcji */}
         <div className="collapse collapse-arrow bg-primary/5 mt-6 text-primary">

@@ -1,5 +1,4 @@
-import type React from "react";
-import { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
 import { calculatePension } from "@/core/calculatePension";
@@ -14,7 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 interface Scenario {
-  years: number; // 0, 5, 10
+  years: number;
   label: string;
 }
 
@@ -24,18 +23,15 @@ const scenarios: Scenario[] = [
   { years: 0, label: "Do Emerytury" },
 ];
 
-// STAŁE DANE FINANSOWE I DEMOGRAFICZNE
-const ANNUAL_RETURN_RATE = 0.05; // 5% roczny zysk z inwestycji (uproszczony)
-const RETIREMENT_AGE = { MALE: 65, FEMALE: 60 }; // Używamy tych progów wiekowych
-const AVERAGE_LIFE_EXPECTANCY = { MALE: 75, FEMALE: 82 }; // Średnia długość życia w latach
+const ANNUAL_RETURN_RATE = 0.05;
+const RETIREMENT_AGE = { MALE: 65, FEMALE: 60 };
+const AVERAGE_LIFE_EXPECTANCY = { MALE: 75, FEMALE: 82 };
 
 const SavingsScenarioView: React.FC = () => {
   const snap = useSnapshot(appState);
-
   const [baseMonthlySavings, setBaseMonthlySavings] = useState<number>(800);
-  const EXPECTED_PENSION = 6500; // Zachowujemy dla kolorowania
+  const EXPECTED_PENSION = 6500;
 
-  // 1. DYNAMICZNE USTALENIE WIEKU EMERYTALNEGO I OCZEKIWANEJ DŁUGOŚCI ŻYCIA
   const isMale = snap.gender === GENDERS.MALE || snap.gender === undefined;
 
   const statutoryRetirementAge = isMale
@@ -45,19 +41,14 @@ const SavingsScenarioView: React.FC = () => {
     ? AVERAGE_LIFE_EXPECTANCY.MALE
     : AVERAGE_LIFE_EXPECTANCY.FEMALE;
 
-  // 2. OBLICZENIE BAZOWEJ EMERYTURY (w tle używa snap.age, snap.retirementAge)
   const currentPension = calculatePension({
-    // Używamy snap.age (aktualny wiek), a nie snap.retirementAge, bo ta ostatnia może być zmieniona przez użytkownika.
     age: snap.age,
     retirementAge: snap.retirementAge,
     gender: snap.gender ?? GENDERS.MALE,
   });
 
-  // Oblicza całkowitą liczbę lat inwestowania (dla progu 'Do Emerytury')
   const getInvestmentYears = (scenarioYears: number): number => {
     if (scenarioYears > 0) return scenarioYears;
-
-    // Obliczamy lata do ustawowego wieku emerytalnego (65/60)
     return Math.max(0, statutoryRetirementAge - snap.age);
   };
 
@@ -70,22 +61,14 @@ const SavingsScenarioView: React.FC = () => {
 
   const getInvestmentResults = (years: number, monthlySavings: number) => {
     const investmentMonths = years * 12;
-
-    // Lata emerytury: Średnia długość życia - Ustawowy wiek emerytalny
     const retirementYears = Math.max(
       1,
       lifeExpectancy - statutoryRetirementAge
     );
     const retirementMonths = retirementYears * 12;
-
-    // 1. Sumaryczna Kwota Oszczędności (bez zysków)
     const totalSaved = monthlySavings * investmentMonths;
-
-    // 2. Uproszczone Obliczenie Kapitału z Zyskiem
     const compoundFactor = Math.pow(1 + ANNUAL_RETURN_RATE, years);
     const totalCapital = totalSaved * compoundFactor;
-
-    // 3. Miesięczna Renta
     const monthlyPensionGain =
       retirementMonths > 0 ? totalCapital / retirementMonths : 0;
 
@@ -105,7 +88,6 @@ const SavingsScenarioView: React.FC = () => {
 
   const ScenarioColumn: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
     const years = getInvestmentYears(scenario.years);
-
     const {
       totalSaved,
       monthlyGain,
@@ -198,7 +180,6 @@ const SavingsScenarioView: React.FC = () => {
         </span>
       </p>
 
-      {/* NOWY INPUT DLA UŻYTKOWNIKA */}
       <div className="text-center mb-10 card p-6 bg-base-100 shadow-lg max-w-lg mx-auto">
         <h2 className="text-xl font-semibold mb-3 text-info flex items-center justify-center">
           <CurrencyDollarIcon className="w-6 h-6 mr-2" />
@@ -226,14 +207,12 @@ const SavingsScenarioView: React.FC = () => {
         </p>
       </div>
 
-      {/* Kolumny Scenariuszy */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-6">
         {scenarios.map((scenario) => (
           <ScenarioColumn key={scenario.years} scenario={scenario} />
         ))}
       </div>
 
-      {/* Informacja o symulacji */}
       <div className="alert alert-info mt-10 shadow-lg w-fit mx-auto">
         <PresentationChartLineIcon className="w-6 h-6 shrink-0" />
         <span className="text-center">

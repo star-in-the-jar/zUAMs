@@ -1,4 +1,5 @@
 import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
 import z from "zod";
 import { calculateZusRetirementSimple, ZusCalculationInputSchema } from "./zusCompute";
 import { IncomeTaxUtil } from "@/sim/incomeTax";
@@ -58,28 +59,32 @@ export class AIUtil {
         this.messages = [];
     }
 
-    private buildFullPrompt(userMessage: string): string {
-        let fullPrompt = this.systemMessage;
+    private buildMessagesArray(userMessage: string) {
+        const messages = [];
+        
+        // Add system message if it exists
+        if (this.systemMessage) {
+            messages.push(new SystemMessage(this.systemMessage));
+        }
         
         // Add conversation history
-        if (this.messages.length > 0) {
-            fullPrompt += '\n\nPREVIOUS CONVERSATION:\n';
-            for (const msg of this.messages) {
-                if (msg.role === 'user') {
-                    fullPrompt += `USER: ${msg.content}\n`;
-                } else if (msg.role === 'assistant') {
-                    fullPrompt += `ASSISTANT: ${msg.content}\n`;
-                }
+        for (const msg of this.messages) {
+            if (msg.role === 'user') {
+                messages.push(new HumanMessage(msg.content));
+            } else if (msg.role === 'assistant') {
+                messages.push(new AIMessage(msg.content));
             }
         }
         
-        fullPrompt += `\n\nCURRENT USER MESSAGE: ${userMessage}`;
-        return fullPrompt;
+        // Add current user message
+        messages.push(new HumanMessage(userMessage));
+        
+        return messages;
     }
 
     async generateResponse(userMessage: string): Promise<string> {
-        // Build the full prompt with system message and history
-        const fullPrompt = this.buildFullPrompt(userMessage);
+        // Build the messages array with system message and history
+        const messages = this.buildMessagesArray(userMessage);
 
         try {
             // Try structured output first
@@ -87,7 +92,7 @@ export class AIUtil {
                 method: "json_schema",
             })
 
-            const res = await structuredModel.invoke(fullPrompt)
+            const res = await structuredModel.invoke(messages)
             
             let response: string;
             
@@ -120,7 +125,7 @@ export class AIUtil {
             console.error('Structured output failed, falling back to regular chat:', error);
             
             // Fallback to regular chat without structured output
-            const response = await this.chatModel.invoke(fullPrompt);
+            const response = await this.chatModel.invoke(messages);
             const responseText = response.content as string;
 
             // Add messages to history

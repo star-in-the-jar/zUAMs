@@ -24,7 +24,6 @@ export const ZusCalculationInputSchema = z.object({
   monthsMaternityLeave: z.number().int().min(0).max(120).default(0).describe('Months of maternity leave - counted towards retirement but no contributions'),
   monthsLeave: z.number().int().min(0).max(600).default(0).describe('Months of leave - periods not contributing to ZUS.'),
   yearlyValorization: z.number().positive().default(1.025).describe('Fixed yearly valorization coefficient (default: 1.025 = 2.5%)'),
-  yearlyRetirementValorization: z.number().positive().default(1.025).describe('Fixed yearly retirement valorization (default: 1.025 = 2.5%)')
 })
 
 export type ZusCalculationInput = z.infer<typeof ZusCalculationInputSchema>
@@ -107,9 +106,9 @@ export function calculateZusRetirementSimple(input: ZusCalculationInput): ZusCal
     avgMonthsAliveAfterRetirement,
     monthsOfStudying: input.monthsOfStudying,
     yearlyValorizationCoef: () => input.yearlyValorization, // Convert to function
-    yearlyRetirementValorizationMul: () => input.yearlyRetirementValorization, // Convert to function
+    yearlyRetirementValorizationMul: () => 1.005, //s Convert to function
     additionalSavings: 0, // Not used in simple calculation
-    yearlyAdditionalSavingsValorizationMul: () => 1.025, // Default valorization
+    yearlyAdditionalSavingsValorizationMul: () => 1.005, // Default valorization
     collectedZusBenefits: 0, // Not used in simple calculation
     monthsMaternityLeave: 0,
     averageSickDays: false // Not used in simple calculation

@@ -127,7 +127,7 @@ export function calculateRequiredSalaryForTargetPension(
       const result = calculateZusRetirement(zusConfig);
       return result.monthlyRetirementAmount(0) - appState.pension;
     },
-    xMin: 1000,
+    xMin: 1,
     xMax: 20000,
   };
   const result = solve(config);

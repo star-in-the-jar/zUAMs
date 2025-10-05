@@ -8,6 +8,7 @@ import { calculatePension } from "@/core/calculatePension";
 import { GENDERS } from "@/const/genders";
 import ErrorIcon from "@mui/icons-material/Error";
 import { MEDIAN_GROSS_SALARIES } from "@/const/salary";
+import ZusScenarioView from "./ZusScenarioView";
 
 const Result: React.FC = () => {
   const snap = useSnapshot(appState);
@@ -73,6 +74,17 @@ const Result: React.FC = () => {
         <span>
 
         </span>
+
+        {/* Dodajemy nowy komponent w rozwijanej sekcji */}
+        <div className="collapse collapse-arrow bg-primary/5 mt-6 text-primary">
+          <input type="checkbox" className="collapse-toggle" />
+          <div className="collapse-title font-medium text-xl">
+            Scenariusze ZUS
+          </div>
+          <div className="collapse-content">
+            <ZusScenarioView />
+          </div>
+        </div>
       </div>
 
       <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-base -translate-x-1/2">

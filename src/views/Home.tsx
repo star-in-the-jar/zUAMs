@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
-import { calculateRequiredSalaryForTargetPension } from "@/core/calculatePension";
+import { bruteForceRequiredSalaryForTargetPension } from "@/core/calculatePension";
 import SectionAgeAndRetirement from "@/components/SectionAgeAndRetirement";
 import LogoZus from "@/components/LogoZeus";
 
@@ -19,7 +19,7 @@ const Home: React.FC = () => {
       alert("Wybierz płeć, wiek i oczekiwaną wysokość emerytury");
       return;
     }
-    const requiredSalary = calculateRequiredSalaryForTargetPension(appState);
+    const requiredSalary = bruteForceRequiredSalaryForTargetPension(appState);
     if (requiredSalary) {
       appState.monthlyGrossSalary = Math.round(requiredSalary);
     }

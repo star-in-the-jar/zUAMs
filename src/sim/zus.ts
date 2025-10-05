@@ -1,6 +1,7 @@
 // ZUS Retirement Calculator Types
 import type { Gender } from '@/const/genders'
 import { GENDERS } from '@/const/genders'
+import { MINIMAL_PENSION } from '@/const/pension'
 
 /**
  * Period types for employment
@@ -95,6 +96,8 @@ export type ZusRetirementResult = {
 // Constants
 export const ZUS_UOP_CONTRIBUTION_RATE = 0.0976 // 9.76%
 
+export const MAX_UOP_BRUTTO = 260190 / 12
+
 // Helper functions
 function yearMonthToMonthIndex(yearMonth: YearMonth, baseYear: number): number {
     return (yearMonth.year - baseYear) * 12 + (yearMonth.month - 1)
@@ -181,7 +184,10 @@ function simulateZusAccumulation(config: ZusRetirementConfig): number {
         for (const period of config.employmentPeriods) {
             if (isMonthInPeriod(currentYearMonth, period)) {
                 if (period.type === PeriodType.UOP) {
-                    const grossSalary = period.grossMonthlySalary(currentYearMonth.year, currentYearMonth.month)
+                    const grossSalary = Math.min(
+                        period.grossMonthlySalary(currentYearMonth.year, currentYearMonth.month),
+                        MAX_UOP_BRUTTO,
+                    )
                     accountBalance += grossSalary * ZUS_UOP_CONTRIBUTION_RATE
                 } else if (period.type === PeriodType.MATERNITY_LEAVE) {
                     const grossSalary = period.grossMonthlySalary(currentYearMonth.year, currentYearMonth.month)
@@ -227,6 +233,11 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
                 const yearFromStart = Math.floor(month / 12)
                 currentRetirement *= config.yearlyRetirementValorizationMul(yearFromStart)
             }
+        }
+
+        // Apply minimal pension guarantee
+        if (currentRetirement < MINIMAL_PENSION && isEligibleForMinimalRetirement) {
+            return MINIMAL_PENSION
         }
 
         return currentRetirement

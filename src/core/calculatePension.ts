@@ -12,7 +12,10 @@ import {
 import { calculateZusRetirement } from "@/sim";
 import { MINIMAL_PENSION } from "@/const/pension";
 import { solve, type SolverConfig } from "@/sim/solver";
-
+import {
+  MIN_RETIREMENT_AGE_TO_COMPUTE_SALARY,
+  MAX_RETIREMENT_AGE_TO_COMPUTE_SALARY,
+} from "@/const/age";
 
 export const calculatePension = (appState: AppState): string => {
   const zusRetirementResult = calculateZusRetirement(
@@ -74,9 +77,8 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
   const employmentPeriods: EmploymentPeriod[] = [employmentPeriodWithFn];
 
   return {
-    avgMonthsAliveAfterRetirement: calculateAvgMonthsAfterRetirement(
-      retirementAge,
-    ),
+    avgMonthsAliveAfterRetirement:
+      calculateAvgMonthsAfterRetirement(retirementAge),
 
     employmentPeriods,
     gender: normalizedGender,
@@ -125,12 +127,34 @@ export function calculateRequiredSalaryForTargetPension(
       const result = calculateZusRetirement(zusConfig);
       return result.monthlyRetirementAmount(0) - appState.pension;
     },
-    xMin: 1000,
+    xMin: 1,
     xMax: 20000,
   };
   const result = solve(config);
-  if (Math.abs(result.fx) < 10 && result.x > 1000 && result.x < 20000) {
+  console.log(result);
+  if (Math.abs(result.fx) < 10 && result.x > 0.1 && result.x < 20000) {
     return result.x;
   }
   return undefined;
+}
+
+export function bruteForceRequiredSalaryForTargetPension(
+  appState: AppState
+): number | undefined {
+  if (appState.employmentType !== "UoP") return undefined;
+  const normalizedGender = appState.gender ?? GENDERS.MALE;
+  const isInScopeToComputeSalary =
+    appState.retirementAge >=
+      MIN_RETIREMENT_AGE_TO_COMPUTE_SALARY[normalizedGender] &&
+    appState.retirementAge <= MAX_RETIREMENT_AGE_TO_COMPUTE_SALARY;
+
+  if (!isInScopeToComputeSalary) return undefined;
+
+  const result = calculateRequiredSalaryForTargetPension(appState);
+  if (!result) {
+    appState.retirementAge += 1;
+    return bruteForceRequiredSalaryForTargetPension(appState);
+  }
+
+  return result;
 }

@@ -30,7 +30,7 @@ const GenderButtons = () => {
       <button
         type="button"
         className={classMerge(
-          "btn",
+          "btn w-1/2",
           isActiveGender ? "btn-primary" : undefined,
           isLeftButton ? "rounded-r-none" : "rounded-l-none"
         )}
@@ -42,7 +42,7 @@ const GenderButtons = () => {
   };
 
   return (
-    <div className="btn-group">
+    <div className="btn-group w-full">
       {renderButtonByGender(GENDERS.MALE)}
       {renderButtonByGender(GENDERS.FEMALE)}
     </div>

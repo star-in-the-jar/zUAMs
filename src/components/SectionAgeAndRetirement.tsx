@@ -26,27 +26,26 @@ const SectionAgeAndRetirement: React.FC = () => {
   return (
     <div className="bg-white text-base-content card">
       <div className="card-body">
-        <h3 className="text-lg text-primary card-title">Wiek i emerytura</h3>
         <div className="flex flex-col gap-y-4">
           <div className="form-control">
             <label className="label">
               <span className="font-medium label-text">
-                Jaką emeryturę chciałbyś mieć?
+                Jaką emeryturę miesięczną chciałbyś mieć?
               </span>
             </label>
-            <div className="flex items-center gap-2">
+            <div className="input w-full">
               <input
                 value={snap.pension}
-                className="input-bordered w-20 input"
+                className="grow"
                 type="number"
                 onChange={handlePensionChange}
               />
-              <span className="text-sm">zł/mc</span>
+              PLN
             </div>
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="font-medium label-text">Kim jesteś?</span>
+              <span className="font-medium label-text">Jesteś</span>
             </label>
             <GenderButtons />
             <div className="label">
@@ -62,16 +61,14 @@ const SectionAgeAndRetirement: React.FC = () => {
                 W jakim wieku jesteś?
               </span>
             </label>
-            <div className="flex items-center gap-2">
+            <div className="input w-full">
               <input
                 value={snap.age}
-                className="input-bordered w-20 input"
+                className="grow"
                 type="number"
-                min={MIN_AGE}
-                max={MAX_AGE}
                 onChange={handleAgeChange}
               />
-              <span className="text-sm">lat</span>
+              lat
             </div>
           </div>
         </div>

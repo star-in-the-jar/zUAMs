@@ -31,7 +31,7 @@ const Home: React.FC = () => {
         <button
           type="button"
           onClick={handleSubmit}
-          className="btn btn-primary btn-md"
+          className="btn btn-primary btn-lg"
         >
           Sprawdź
         </button>

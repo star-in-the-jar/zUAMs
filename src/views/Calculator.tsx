@@ -7,22 +7,7 @@ import SectionSavings from "@/components/SectionSavings";
 import { calculatePension } from "@/core/calculatePension";
 import { GENDERS } from "@/const/genders";
 import ErrorIcon from "@mui/icons-material/Error";
-import { MAX_AGE, MIN_AGE } from "@/const/age";
-
-const handleRetirementAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const val = e.target.value;
-  const num = Number(val);
-  if (!isNaN(num) && num > MIN_AGE && num < MAX_AGE) {
-    appState.retirementAge = num;
-    appState.age = Math.min(appState.age, num);
-  }
-};
-
-const getRetirementYear = (age: number, retirementAge: number) => {
-  const currentYear = new Date().getFullYear();
-  const yearsToRetirement = retirementAge - age;
-  return currentYear + yearsToRetirement;
-};
+import { MEDIAN_GROSS_SALARIES } from "@/const/salary";
 
 const Result: React.FC = () => {
   const snap = useSnapshot(appState);
@@ -41,42 +26,24 @@ const Result: React.FC = () => {
   React.useEffect(() => {
     if (!snap.gender) {
       setAndMarkAsChanged("gender", GENDERS.MALE);
+      appState.monthlyGrossSalary = MEDIAN_GROSS_SALARIES[GENDERS.MALE];
     }
   }, []);
 
   return (
-    <div className="flex flex-col items-center pb-20 min-h-screen">
+    <div className="flex flex-col items-center pb-20">
       <div className="w-full max-w-2xl">
-        <h1 className="mb-6 font-semibold text-primary text-4xl">
+        <h1 className="mb-4 font-semibold text-primary text-4xl">
           Zakładając, że
         </h1>
-        <div className="alert bg-accent/30 text-accent-content">
+        <div className="alert bg-accent/30 text-accent-content mb-12">
           <ErrorIcon />
           {getAlertText()}
         </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="font-medium label-text">
-              W jakim wieku przejdziesz na emeryturę?
-            </span>
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              value={snap.retirementAge}
-              className="input-bordered w-20 input"
-              type="number"
-              min={MIN_AGE}
-              max={MAX_AGE}
-              onChange={handleRetirementAgeChange}
-            />
-            <span className="text-sm">lat</span>
-          </div>
-          <div className="label">
-            <span className="label-text-alt text-base-content/60">
-              Czyli w {getRetirementYear(snap.age, snap.retirementAge)} roku
-            </span>
-          </div>
+        <div className="mb-12">
+          <SectionWorkAndSalary />
         </div>
+
         <form className="mb-6">
           <div className="flex flex-col gap-y-4 w-full">
             <div className="collapse collapse-arrow bg-primary/5 text-primary">
@@ -86,7 +53,6 @@ const Result: React.FC = () => {
               </div>
               <div className="collapse-content">
                 <div className="flex flex-col gap-y-6 pt-4">
-                  <SectionWorkAndSalary />
                   <SectionLeavesAndBreaks />
                   <SectionSavings />
                 </div>

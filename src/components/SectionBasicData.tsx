@@ -2,32 +2,47 @@ import React from "react";
 import { useSnapshot } from "valtio";
 import { appState, setAndMarkAsChanged } from "@/store/appState";
 import UnchangedField from "./UnchangedField";
-import { MAX_AGE, MIN_AGE } from "@/const/age";
+import { MAX_AGE, MIN_AGE, MIN_AGE_TO_WORK } from "@/const/age";
 
-const handleEmploymentTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  setAndMarkAsChanged("employmentType", e.target.value as "UoP" | "JDG");
-};
+const SectionBasicData: React.FC = () => {
+  const handleEmploymentTypeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAndMarkAsChanged("employmentType", e.target.value as "UoP" | "JDG");
+  };
 
-const handleRetirementAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const val = e.target.value;
-  const num = Number(val);
-  if (!isNaN(num) && num > MIN_AGE && num < MAX_AGE) {
-    appState.retirementAge = num;
-    appState.age = Math.min(appState.age, num);
-  }
-};
+  const handleWorkSinceAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    const num = Number(val);
+    if (!isNaN(num) && num >= 0) {
+      setAndMarkAsChanged(
+        "workSinceAge",
+        Math.max(MIN_AGE_TO_WORK, Math.min(num, snap.age))
+      );
+    }
+  };
 
-const handleMonthlyGrossSalaryChange = (
-  e: React.ChangeEvent<HTMLInputElement>
-) => {
-  const val = e.target.value;
-  const num = Number(val);
-  if (!isNaN(num) && num >= 0) {
-    setAndMarkAsChanged("monthlyGrossSalary", num);
-  }
-};
+  const handleRetirementAgeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const val = e.target.value;
+    const num = Number(val);
+    if (!isNaN(num) && num > MIN_AGE && num < MAX_AGE) {
+      appState.retirementAge = num;
+      appState.age = Math.min(appState.age, num);
+    }
+  };
 
-const SectionWorkAndSalary: React.FC = () => {
+  const handleMonthlyGrossSalaryChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const val = e.target.value;
+    const num = Number(val);
+    if (!isNaN(num) && num >= 0) {
+      setAndMarkAsChanged("monthlyGrossSalary", num);
+    }
+  };
+
   const snap = useSnapshot(appState);
   return (
     <div className="bg-white text-base-content card">
@@ -100,7 +115,26 @@ const SectionWorkAndSalary: React.FC = () => {
                     min="0"
                     onChange={handleMonthlyGrossSalaryChange}
                   />
-                  PLN
+                  zł
+                </div>
+              </label>
+            </div>
+          </UnchangedField>
+          <UnchangedField field="workSinceAge">
+            <div className="flex flex-col gap-y-1 w-full">
+              <label>
+                <span className="font-medium label-text">
+                  W jakim wieku zacząłeś pracować?
+                </span>
+                <div className="input w-full">
+                  <input
+                    value={snap.workSinceAge}
+                    className="grow"
+                    type="number"
+                    min="0"
+                    onChange={handleWorkSinceAgeChange}
+                  />
+                  lat
                 </div>
               </label>
             </div>
@@ -111,4 +145,4 @@ const SectionWorkAndSalary: React.FC = () => {
   );
 };
 
-export default SectionWorkAndSalary;
+export default SectionBasicData;

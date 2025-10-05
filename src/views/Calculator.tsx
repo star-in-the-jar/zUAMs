@@ -1,7 +1,7 @@
 import React from "react";
 import { useSnapshot } from "valtio";
 import { appState, setAndMarkAsChanged } from "@/store/appState";
-import SectionWorkAndSalary from "@/components/SectionWorkAndSalary";
+import SectionBasicData from "@/components/SectionBasicData";
 import SectionLeavesAndBreaks from "@/components/SectionLeavesAndBreaks";
 import SectionSavings from "@/components/SectionSavings";
 import { calculatePension } from "@/core/calculatePension";
@@ -48,7 +48,7 @@ const Result: React.FC = () => {
           {getAlertText()}
         </div>
         <div className="mb-12">
-          <SectionWorkAndSalary />
+          <SectionBasicData />
         </div>
 
         <form className="mb-6">
@@ -71,14 +71,8 @@ const Result: React.FC = () => {
 
       <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-base -translate-x-1/2">
         Otrzymasz emeryturę w wysokości&nbsp;
-        <span className="font-bold text-primary">
-          {calculatePension({
-            age: snap.age,
-            retirementAge: snap.retirementAge,
-            gender: snap.gender ?? GENDERS.MALE,
-          })}
-        </span>
-        &nbsp;zł miesięcznie (netto)
+        <span className="font-bold text-primary">{calculatePension(snap)}</span>
+        &nbsp;miesięcznie (netto)
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export const appState = proxy<AppState>({
   gender: undefined,
   age: 20,
   workSinceAge: 20,
-  retirementAge: 75,
+  retirementAge: 70,
   salary: undefined,
   // Advanced options defaults
   maternityLeaves: 0,

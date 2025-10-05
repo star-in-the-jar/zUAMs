@@ -44,7 +44,7 @@ const SectionSavings: React.FC = () => {
                     min="0"
                     onChange={handleCollectedZusBenefitsChange}
                   />
-                  PLN
+                  zł
                 </div>
               </label>
             </div>
@@ -64,7 +64,7 @@ const SectionSavings: React.FC = () => {
                     min="0"
                     onChange={handleAdditionalSavingsChange}
                   />
-                  PLN
+                  zł
                 </div>
               </label>
 

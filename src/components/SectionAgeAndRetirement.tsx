@@ -40,7 +40,7 @@ const SectionAgeAndRetirement: React.FC = () => {
                 type="number"
                 onChange={handlePensionChange}
               />
-              PLN
+              zł
             </div>
           </div>
           <div className="form-control">

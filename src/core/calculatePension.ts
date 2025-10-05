@@ -15,7 +15,6 @@ import {
   MAX_RETIREMENT_AGE_TO_COMPUTE_SALARY,
 } from "@/const/age";
 
-
 export const calculatePension = (appState: AppState): string => {
   const zusRetirementResult = calculateZusRetirement(
     prepareZusConfig(appState)
@@ -76,9 +75,8 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
   const employmentPeriods: EmploymentPeriod[] = [employmentPeriodWithFn];
 
   return {
-    avgMonthsAliveAfterRetirement: calculateAvgMonthsAfterRetirement(
-      retirementAge,
-    ),
+    avgMonthsAliveAfterRetirement:
+      calculateAvgMonthsAfterRetirement(retirementAge),
 
     employmentPeriods,
     gender: normalizedGender,
@@ -131,7 +129,8 @@ export function calculateRequiredSalaryForTargetPension(
     xMax: 20000,
   };
   const result = solve(config);
-  if (Math.abs(result.fx) < 10 && result.x > 1000 && result.x < 20000) {
+  console.log(result);
+  if (Math.abs(result.fx) < 10 && result.x > 0.1 && result.x < 20000) {
     return result.x;
   }
   return undefined;

@@ -10,6 +10,10 @@ import {
 import { calculateZusRetirement } from "@/sim";
 import { MINIMAL_PENSION } from "@/const/pension";
 import { solve, type SolverConfig } from "@/sim/solver";
+import {
+  MIN_RETIREMENT_AGE_TO_COMPUTE_SALARY,
+  MAX_RETIREMENT_AGE_TO_COMPUTE_SALARY,
+} from "@/const/age";
 
 
 export const calculatePension = (appState: AppState): string => {
@@ -131,4 +135,25 @@ export function calculateRequiredSalaryForTargetPension(
     return result.x;
   }
   return undefined;
+}
+
+export function bruteForceRequiredSalaryForTargetPension(
+  appState: AppState
+): number | undefined {
+  if (appState.employmentType !== "UoP") return undefined;
+  const normalizedGender = appState.gender ?? GENDERS.MALE;
+  const isInScopeToComputeSalary =
+    appState.retirementAge >=
+      MIN_RETIREMENT_AGE_TO_COMPUTE_SALARY[normalizedGender] &&
+    appState.retirementAge <= MAX_RETIREMENT_AGE_TO_COMPUTE_SALARY;
+
+  if (!isInScopeToComputeSalary) return undefined;
+
+  const result = calculateRequiredSalaryForTargetPension(appState);
+  if (!result) {
+    appState.retirementAge += 1;
+    return bruteForceRequiredSalaryForTargetPension(appState);
+  }
+
+  return result;
 }

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Assistant from '@/components/Assistant';
-import AssistantIcon from '@mui/icons-material/Assistant';
+import React, { useState, useEffect } from "react";
+import Assistant from "@/components/Assistant";
+import AssistantIcon from "@mui/icons-material/Assistant";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,9 +16,9 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({
   children,
-  drawerId = 'my-drawer-assistant',
-  openButtonText = 'Masz pytania?',
-  openButtonClassName = 'btn btn-primary btn-circle btn-lg shadow-lg',
+  drawerId = "my-drawer-assistant",
+  openButtonText = "Masz pytania?",
+  openButtonClassName = "btn btn-primary btn-circle btn-lg shadow-lg",
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -34,27 +34,23 @@ const Layout: React.FC<LayoutProps> = ({
     setIsDrawerOpen(checkbox.checked);
 
     // Listen for changes
-    checkbox.addEventListener('change', handleChange);
+    checkbox.addEventListener("change", handleChange);
 
     return () => {
-      checkbox.removeEventListener('change', handleChange);
+      checkbox.removeEventListener("change", handleChange);
     };
   }, [drawerId]);
 
   return (
     <div className="m-0 p-0 drawer drawer-end">
-      <input
-        id={drawerId}
-        type="checkbox"
-        className="drawer-toggle"
-      />
+      <input id={drawerId} type="checkbox" className="drawer-toggle" />
       <div className="relative drawer-content">
         {/* Page content here */}
         {children}
 
         {/* Floating Action Button - hidden when drawer is open */}
         {!isDrawerOpen && (
-          <div className="right-6 bottom-6 z-50 fixed">
+          <div className="right-6 bottom-32 lg:bottom-6 z-50 fixed">
             <label
               htmlFor={drawerId}
               className={`${openButtonClassName} tooltip tooltip-left`}
@@ -62,9 +58,11 @@ const Layout: React.FC<LayoutProps> = ({
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  const checkbox = document.getElementById(drawerId) as HTMLInputElement;
+                  const checkbox = document.getElementById(
+                    drawerId
+                  ) as HTMLInputElement;
                   if (checkbox) {
                     checkbox.checked = !checkbox.checked;
                   }
@@ -82,8 +80,8 @@ const Layout: React.FC<LayoutProps> = ({
           aria-label="close sidebar"
           className="drawer-overlay"
         />
-        <ul className="z-50 bg-base-200 p-4 w-140 h-full min-h-screen text-base-content menu">
-            <Assistant chatName="Zeus" />
+        <ul className="z-50 bg-base-200 p-2 lg:p-4 lg:w-140 h-full min-h-screen text-base-content menu">
+          <Assistant chatName="Zeus" />
         </ul>
       </div>
     </div>

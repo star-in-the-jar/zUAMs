@@ -71,7 +71,7 @@ const Result: React.FC = () => {
             </div>
 
             {/* 2. SCENARIUSZE ZUS */}
-            <div className="collapse collapse-arrow bg-primary/5 border-b border-b-primary/10 text-primary">
+            <div className="collapse collapse-arrow bg-primary/5 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
                 Scenariusze ZUS
@@ -81,7 +81,7 @@ const Result: React.FC = () => {
               </div>
             </div>
 
-            {/* 3. SCENARIUSZE OSZCZĘDNOŚCI (POPRAWIONY BLOK) */}
+            {/* 3. SCENARIUSZE OSZCZĘDNOŚCI (POPRAWIONY BLOK)
             <div className="collapse collapse-arrow bg-primary/5 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
@@ -90,7 +90,7 @@ const Result: React.FC = () => {
               <div className="collapse-content">
                 <SavingsScenarioView />
               </div>
-            </div>
+            </div> */}
           </div>
         </form>
         <div className="mb-6 text-xs text-base-content/70">
@@ -100,9 +100,11 @@ const Result: React.FC = () => {
         <span></span>
       </div>
 
-      <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-base -translate-x-1/2">
+      <div className="bottom-5 left-1/2 fixed w-9/10 lg:w-[unset] px-3 text-center lg:text-[unset] bg-white shadow-md p-4 lg:px-6 border border-base-200 rounded-full text-base -translate-x-1/2">
         Otrzymasz emeryturę w wysokości&nbsp;
-        <span className="font-bold text-primary">{appState.pension} zł</span>
+        <span className="font-bold text-primary">
+          {appState.pension}&nbsp;zł
+        </span>
         &nbsp;miesięcznie (netto)
       </div>
     </div>

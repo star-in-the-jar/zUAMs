@@ -176,7 +176,7 @@ const ZusScenarioView: React.FC = () => {
 
   return (
     <div className="bg-white text-base-content rounded-2xl p-4 shadow-md">
-      <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-4xl text-center">
+      <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-xl lg:text-4xl text-center">
         ZUS: Dłuższa Praca
       </h1>
 

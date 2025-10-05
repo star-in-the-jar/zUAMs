@@ -28,15 +28,12 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="items-start gap-x-6 lg:grid grid-cols-12 mx-auto mt-32 max-w-7xl">
+    <div className="items-start gap-x-6 lg:grid grid-cols-12 mx-auto mt-8 lg:mt-32 max-w-7xl">
       <div className="col-span-7">
-        <div className="mb-4">
-          <LogoZus />
-        </div>
-        <h1 className="mb-8 font-bold text-6xl">
+        <h1 className="mb-4 lg:mb-8 font-bold text-3xl lg:text-6xl">
           Poznaj <span className="text-primary">ZeUS</span>
         </h1>
-        <p className="max-w-lg text-lg">
+        <p className="lg:max-w-lg lg:text-lg">
           ZeUS to nowoczesne narzędzie, które pozwala w prosty sposób
           przewidzieć swoją przyszłą emeryturę i świadomie planować finanse.
           Sprawdź, jak Twoje decyzje zawodowe, zarobki i oszczędności mogą
@@ -48,8 +45,8 @@ const Home: React.FC = () => {
         </p>
       </div>
       <div className="col-span-5">
-        <div className="flex flex-col justify-center items-center gap-y-4 mt-8 lg:mt-20 h-full">
-          <h2 className="mb-4 font-semibold text-4xl text-center">
+        <div className="flex flex-col justify-center items-center gap-y-4 mt-8 lg:mt-0 h-full">
+          <h2 className="mb-4 font-semibold text-xl lg:text-4xl text-center">
             Zaplanuj swoją emeryturę
           </h2>
           <form

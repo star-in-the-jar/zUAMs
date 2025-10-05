@@ -53,14 +53,14 @@ const SectionLeavesAndBreaks: React.FC = () => {
           </GenderComponent>
           <UnchangedField field="averageSickDays">
             <div className="form-control">
-              <label className="flex items-center gap-2 label">
+              <label className="label">
                 <input
                   type="checkbox"
                   className="peer checked:bg-primary/15 toggle toggle-primary"
                   checked={snap.averageSickDays}
                   onChange={handleAverageSickDaysChange}
                 />
-                <span className="font-medium peer-checked:text-primary">
+                <span className="inline text-wrap ml-2 font-medium peer-checked:text-primary">
                   Chcę brać tyle urlopów zdrowotnych co przeciętny Polak (34 dni
                   rocznie)
                 </span>

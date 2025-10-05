@@ -17,10 +17,7 @@ const SectionBasicData: React.FC = () => {
     const val = e.target.value;
     const num = Number(val);
     if (!isNaN(num) && num >= 0) {
-      setAndMarkAsChanged(
-        "workSinceAge",
-        num
-      );
+      setAndMarkAsChanged("workSinceAge", num);
     }
   };
 
@@ -56,24 +53,26 @@ const SectionBasicData: React.FC = () => {
       <div className="p-0 card-body">
         {/* <h2 className="text-primary text-xl card-title">Podstawowe dane</h2> */}
         <div className="flex flex-col gap-y-4">
-          <div className="form-control">
-            <label>
-              <span className="font-medium label-text">
-              Przedziesz na emeryturę w wieku
-              </span>
-              <div className="w-full input">
-                <input
-                  value={snap.retirementAge}
-                  className="grow"
-                  type="number"
-                  min={MIN_AGE}
-                  max={MAX_AGE}
-                  onChange={handleRetirementAgeChange}
-                />
-                lat
-              </div>
-            </label>
-          </div>
+          <UnchangedField field="retirementAge">
+            <div className="form-control">
+              <label>
+                <span className="font-medium label-text">
+                  Przedziesz na emeryturę w wieku
+                </span>
+                <div className="w-full input">
+                  <input
+                    value={snap.retirementAge}
+                    className="grow"
+                    type="number"
+                    min={MIN_AGE}
+                    max={MAX_AGE}
+                    onChange={handleRetirementAgeChange}
+                  />
+                  lat
+                </div>
+              </label>
+            </div>
+          </UnchangedField>
 
           <UnchangedField field="employmentType">
             <div className="flex flex-col gap-y-1 w-full">
@@ -100,11 +99,9 @@ const SectionBasicData: React.FC = () => {
                   aria-label="JDG"
                 />
               </div>
-              <div className="label">
-                <span className="label-text-alt">
-                  Umowa o pracę (UoP) lub Jednoosobowa działalność gospodarcza
-                  (JDG)
-                </span>
+              <div className="label text-wrap">
+                Umowa o pracę (UoP) lub Jednoosobowa działalność gospodarcza
+                (JDG)
               </div>
             </div>
           </UnchangedField>
@@ -150,7 +147,7 @@ const SectionBasicData: React.FC = () => {
           </UnchangedField>
 
           <div className="-mt-3 pt-1 label">
-            <span className="label-text-alt text-xs text-base-content/70">
+            <span className="label-text-alt text-xs text-wrap w-full text-base-content/70">
               Twój obecny staż pracy to {yearsWorked} {formatYears(yearsWorked)}
               . Minimalny wymagany staż (do minimalnej emerytury) to {minStaz}{" "}
               lat. Osiągniesz go w wieku {minStazAchieveAge} lat.

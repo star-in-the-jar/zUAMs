@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send } from '@mui/icons-material';
-import { AIUtil } from '@/ai/ai';
+import React, { useState, useRef, useEffect } from "react";
+import { Send } from "@mui/icons-material";
+import { AIUtil } from "@/ai/ai";
 
-import { useSnapshot } from 'valtio';
-import { appState, type AppState } from '@/store/appState';
-import { GENDERS } from '@/const/genders';
+import { useSnapshot } from "valtio";
+import { appState, type AppState } from "@/store/appState";
+import { GENDERS } from "@/const/genders";
 
 interface Message {
   id: string;
@@ -22,35 +22,53 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
   const snap: AppState = useSnapshot(appState);
 
   const userInfoPrompt = `Użytkownik ma ${snap.age} lat${
-    snap.gender ? `, jest ${snap.gender === GENDERS.MALE ? 'mężczyzną' : 'kobietą'}` : ''
+    snap.gender
+      ? `, jest ${snap.gender === GENDERS.MALE ? "mężczyzną" : "kobietą"}`
+      : ""
   } i planuje przejść na emeryturę w wieku ${snap.retirementAge} lat.${
-    snap.monthlyGrossSalary > 0 ? ` Jego miesięczne wynagrodzenie brutto wynosi ${snap.monthlyGrossSalary} zł.` : ''
+    snap.monthlyGrossSalary > 0
+      ? ` Jego miesięczne wynagrodzenie brutto wynosi ${snap.monthlyGrossSalary} zł.`
+      : ""
   }${
-    snap.currentMonthlySalary > 0 ? ` Obecnie zarabia ${snap.currentMonthlySalary} zł brutto miesięcznie.` : ''
-  } Jest zatrudniony na umowę ${snap.employmentType === 'UoP' ? 'o pracę' : 'B2B (JDG)'}.${
-    snap.maternityLeaves > 0 ? ` Ma ${snap.maternityLeaves} miesięcy urlopu macierzyńskiego.` : ''
+    snap.currentMonthlySalary > 0
+      ? ` Obecnie zarabia ${snap.currentMonthlySalary} zł brutto miesięcznie.`
+      : ""
+  } Jest zatrudniony na umowę ${
+    snap.employmentType === "UoP" ? "o pracę" : "B2B (JDG)"
+  }.${
+    snap.maternityLeaves > 0
+      ? ` Ma ${snap.maternityLeaves} miesięcy urlopu macierzyńskiego.`
+      : ""
   }${
-    !snap.averageSickDays ? ` Nie uwzględnia średniej liczby dni chorobowych.` : ''
+    !snap.averageSickDays
+      ? ` Nie uwzględnia średniej liczby dni chorobowych.`
+      : ""
   }${
-    snap.additionalSavings > 0 ? ` Odkłada dodatkowo ${snap.additionalSavings} zł w II i III filarze.` : ''
+    snap.additionalSavings > 0
+      ? ` Odkłada dodatkowo ${snap.additionalSavings} zł w II i III filarze.`
+      : ""
   }${
-    snap.collectedZusBenefits > 0 ? ` Suma już zebranych świadczeń w ZUS wynosi ${snap.collectedZusBenefits} zł.` : ''
+    snap.collectedZusBenefits > 0
+      ? ` Suma już zebranych świadczeń w ZUS wynosi ${snap.collectedZusBenefits} zł.`
+      : ""
   }${
-    snap.jdgStartYear && snap.yearsOnJdg && snap.monthlyJdgZusContribution 
+    snap.jdgStartYear && snap.yearsOnJdg && snap.monthlyJdgZusContribution
       ? ` Prowadzi JDG od roku ${snap.jdgStartYear} przez ${snap.yearsOnJdg} lat, płacąc ${snap.monthlyJdgZusContribution} zł składki ZUS miesięcznie.`
-      : ''
-  }`.trim().replace(/\s+/g, ' ');
+      : ""
+  }`
+    .trim()
+    .replace(/\s+/g, " ");
 
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      text: 'Cześć! Jak mogę Ci pomóc w przygotowaniu się do emerytury?',
+      id: "1",
+      text: "Cześć! Jak mogę Ci pomóc w przygotowaniu się do emerytury?",
       isUser: false,
       timestamp: new Date(),
     },
   ]);
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -59,7 +77,7 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
   // Initialize AI utility
   useEffect(() => {
     const aiUtil = new AIUtil({
-      model: 'gpt-4.1',
+      model: "gpt-4.1",
       temperature: 0.3,
       maxTokens: 1000,
     });
@@ -119,12 +137,15 @@ Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to z
   }, [userInfoPrompt]);
 
   const suggestedPrompts: SuggestedPrompt[] = [
-    { id: '2', text: 'O ile zmniejszy mi się emerytura jeśli pójdę na macierzyński?' },
-    { id: '3', text: 'Kiedy przejść na emeryturę?' },
+    {
+      id: "2",
+      text: "O ile zmniejszy mi się emerytura jeśli pójdę na macierzyński?",
+    },
+    { id: "3", text: "Kiedy przejść na emeryturę?" },
   ];
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -144,34 +165,35 @@ Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to z
     const aiMessageId = (Date.now() + 1).toString();
     const aiMessage: Message = {
       id: aiMessageId,
-      text: '',
+      text: "",
       isUser: false,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage, aiMessage]);
-    setInputValue('');
+    setMessages((prev) => [...prev, userMessage, aiMessage]);
+    setInputValue("");
     setIsLoading(true);
 
     try {
       await aiUtilRef.current.streamMessage(
         userMessage.text,
         (chunk: string) => {
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === aiMessageId
-                ? { ...msg, text: msg.text + chunk }
-                : msg
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiMessageId ? { ...msg, text: msg.text + chunk } : msg
             )
           );
         }
       );
     } catch (error) {
-      console.error('Error generating response:', error);
-      setMessages(prev =>
-        prev.map(msg =>
+      console.error("Error generating response:", error);
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg.id === aiMessageId
-            ? { ...msg, text: 'Przepraszam, wystąpił błąd podczas generowania odpowiedzi. Spróbuj ponownie.' }
+            ? {
+                ...msg,
+                text: "Przepraszam, wystąpił błąd podczas generowania odpowiedzi. Spróbuj ponownie.",
+              }
             : msg
         )
       );
@@ -181,7 +203,7 @@ Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to z
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -200,33 +222,31 @@ Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to z
     const aiMessageId = (Date.now() + 1).toString();
     const aiMessage: Message = {
       id: aiMessageId,
-      text: '',
+      text: "",
       isUser: false,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage, aiMessage]);
+    setMessages((prev) => [...prev, userMessage, aiMessage]);
     setIsLoading(true);
 
     try {
-      await aiUtilRef.current.streamMessage(
-        prompt,
-        (chunk: string) => {
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === aiMessageId
-                ? { ...msg, text: msg.text + chunk }
-                : msg
-            )
-          );
-        }
-      );
+      await aiUtilRef.current.streamMessage(prompt, (chunk: string) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiMessageId ? { ...msg, text: msg.text + chunk } : msg
+          )
+        );
+      });
     } catch (error) {
-      console.error('Error generating response:', error);
-      setMessages(prev =>
-        prev.map(msg =>
+      console.error("Error generating response:", error);
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg.id === aiMessageId
-            ? { ...msg, text: 'Przepraszam, wystąpił błąd podczas generowania odpowiedzi. Spróbuj ponownie.' }
+            ? {
+                ...msg,
+                text: "Przepraszam, wystąpił błąd podczas generowania odpowiedzi. Spróbuj ponownie.",
+              }
             : msg
         )
       );
@@ -235,13 +255,14 @@ Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to z
     setIsLoading(false);
   };
 
-
   return (
     <div className="flex flex-col justify-between h-full">
       {/* Header */}
       <div className="p-4 border-b border-base-300">
         <h3 className="font-semibold text-base-content text-lg">{chatName}</h3>
-        <h4 className="font-semibold text-xs text-base-content/70">Twój boski doradca emerytalny</h4>
+        <h4 className="font-semibold text-xs text-base-content/70">
+          Twój boski doradca emerytalny
+        </h4>
       </div>
 
       {/* Messages */}
@@ -249,22 +270,30 @@ Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to z
         {messages.map((message, index) => (
           <div
             key={message.id}
-            className={`chat ${message.isUser ? 'chat-end' : 'chat-start'}`}
+            className={`chat ${message.isUser ? "chat-end" : "chat-start"}`}
           >
-            <div className={`chat-bubble ${message.isUser ? 'bg-primary text-primary-content' : ''}`}>
-              {message.text.split('\n').map((line, index) => (
+            <div
+              className={`chat-bubble ${
+                message.isUser ? "bg-primary text-primary-content" : ""
+              }`}
+            >
+              {message.text.split("\n").map((line, index) => (
                 <React.Fragment key={index}>
                   {line}
-                  {index < message.text.split('\n').length - 1 && <br />}
+                  {index < message.text.split("\n").length - 1 && <br />}
                 </React.Fragment>
               ))}
               {/* Show typing indicator only for the last AI message when loading */}
-              {!message.isUser && isLoading && index === messages.length - 1 && (
-                <div className="flex items-center space-x-2 mt-2">
-                  <div className="loading loading-dots loading-sm"></div>
-                  <span className="opacity-70 text-sm">{chatName} pisze...</span>
-                </div>
-              )}
+              {!message.isUser &&
+                isLoading &&
+                index === messages.length - 1 && (
+                  <div className="flex items-center space-x-2 mt-2">
+                    <div className="loading loading-dots loading-sm"></div>
+                    <span className="opacity-70 text-sm">
+                      {chatName} pisze...
+                    </span>
+                  </div>
+                )}
             </div>
           </div>
         ))}
@@ -276,16 +305,16 @@ Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to z
       <div className="p-4 border-t border-base-300">
         <div className="mb-3">
           <div className="flex flex-wrap gap-2">
-              {suggestedPrompts.map((prompt) => (
-                <button
-                  key={prompt.id}
-                  onClick={async () => await handleSuggestedPrompt(prompt.text)}
-                  disabled={isLoading}
-                  className="btn-outline btn btn-xs btn-primary"
-                >
-                  {prompt.text}
-                </button>
-              ))}
+            {suggestedPrompts.map((prompt) => (
+              <button
+                key={prompt.id}
+                onClick={async () => await handleSuggestedPrompt(prompt.text)}
+                disabled={isLoading}
+                className="btn-outline btn btn-xs btn-primary text-wrap"
+              >
+                {prompt.text}
+              </button>
+            ))}
           </div>
         </div>
 

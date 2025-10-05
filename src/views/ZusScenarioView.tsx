@@ -14,6 +14,7 @@ import {
   BanknotesIcon,
   PresentationChartLineIcon,
 } from "@heroicons/react/24/outline";
+import { calculatePensionByMonths } from "@/core/calculatePension";
 
 interface Scenario {
   years: number; // 2, 4, 8 lat wydłużenia pracy
@@ -169,7 +170,10 @@ const ZusScenarioView: React.FC = () => {
                 Zysk z ZUS (mc)
               </div>
               <div className="text-success text-2xl stat-value">
-                +{Math.round(zusGain)} zł
+                +
+                {calculatePensionByMonths(snap, scenario.years * 12) -
+                  snap.pension}{" "}
+                zł
               </div>
             </div>
 
@@ -180,7 +184,7 @@ const ZusScenarioView: React.FC = () => {
               <div
                 className={`stat-value text-4xl font-extrabold ${colorAfterZus}`}
               >
-                {Math.round(pensionAfterZus)} zł
+                {calculatePensionByMonths(snap, scenario.years * 12)} zł
               </div>
             </div>
           </div>
@@ -190,7 +194,7 @@ const ZusScenarioView: React.FC = () => {
   };
 
   return (
-    <div className="bg-base-200 p-6 rounded-2xl min-h-screen">
+    <div className="bg-white text-base-content rounded-2xl min-h-screen p-8 shadow-md">
       <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-4xl text-center">
         ZUS: Dłuższa Praca
       </h1>
@@ -206,7 +210,7 @@ const ZusScenarioView: React.FC = () => {
         ))}
       </div>
 
-      <div className="shadow-lg mx-auto mt-10 max-w-4xl text-xl alert alert-info">
+      <div className="alert alert-info shadow-lg mx-auto mt-10 max-w-4xl">
         <span>
           Czy wiedziałeś, że zostając na emeryturze powyżej 2 lat względem
           ustawowego wieku emerytalnego, należysz do 3,7% społeczeństwa w
@@ -215,7 +219,7 @@ const ZusScenarioView: React.FC = () => {
           o 0,3% dla kobiet.
         </span>
       </div>
-      <div className="shadow-lg mx-auto mt-10 max-w-4xl text-xl alert alert-info">
+      <div className="alert alert-info shadow-lg mx-auto mt-6 max-w-4xl">
         <span>
           Warto jednak zaznaczyć, że w przeciągu dwóch lat (2022-2024)
           odnotowano spadek osób przechodzących na emeryturę równo w wieku

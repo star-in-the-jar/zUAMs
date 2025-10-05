@@ -17,7 +17,7 @@ import {
   MAX_RETIREMENT_AGE_TO_COMPUTE_SALARY,
 } from "@/const/age";
 
-export const calculatePension = (appState: AppState): string => {
+export const calculatePension = (appState: AppState) => {
   const zusRetirementResult = calculateZusRetirement(
     prepareZusConfig(appState)
   );
@@ -31,7 +31,7 @@ export const calculatePension = (appState: AppState): string => {
     value = MINIMAL_PENSION;
   }
 
-  return `${Math.round(value)} zł`;
+  return Math.round(value);
 };
 
 const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
@@ -96,7 +96,8 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
     additionalSavings: additionalSavings,
     collectedZusBenefits: collectedZusBenefits,
     averageSickDays: averageSickDays,
-    monthsMaternityLeave: maternityLeavesToMaternityLeavesMonth(maternityLeaves),
+    monthsMaternityLeave:
+      maternityLeavesToMaternityLeavesMonth(maternityLeaves),
   };
 };
 
@@ -157,4 +158,12 @@ export function bruteForceRequiredSalaryForTargetPension(
   }
 
   return result;
+}
+
+export function calculatePensionByMonths(appState: AppState, months: number) {
+  const zusConfig = prepareZusConfig(appState);
+
+  const result =
+    calculateZusRetirement(zusConfig).monthlyRetirementAmount(months);
+  return Math.round(result);
 }

@@ -1,6 +1,5 @@
 import { GENDERS } from "@/const/genders";
 import type { EmploymentPeriod, ZusRetirementConfig } from "@/sim";
-import { PeriodType } from "@/sim";
 import type { AppState } from "@/store/appState";
 import {
   calculateAvgMonthsAfterRetirement,
@@ -35,8 +34,7 @@ export const calculatePension = (appState: AppState) => {
 };
 
 const prepareZusConfig = (
-  appState: AppState,
-  options: { yearOffset?: number } = {}
+  appState: AppState
 ): ZusRetirementConfig => {
   const {
     age,
@@ -52,21 +50,18 @@ const prepareZusConfig = (
   } = appState;
   const normalizedGender = gender ?? GENDERS.MALE;
 
-  const workSinceYear =
-    (options?.yearOffset ?? 0) + calculateStartSimYear(age, workSinceAge);
+  const workSinceYear = calculateStartSimYear(age, workSinceAge);
 
   const employmentPeriodWithoutFn: Omit<
     EmploymentPeriod,
     "grossMonthlySalary" | "monthlyZusContribution"
   > = {
     from: {
-      year: (options?.yearOffset ?? 0) + workSinceYear,
+      year: workSinceYear,
       month: 1,
     },
     to: {
-      year:
-        (options?.yearOffset ?? 0) +
-        calculateRetirementYear(age, normalizedGender, retirementAge),
+      year: calculateRetirementYear(age, normalizedGender, retirementAge),
       month: 12,
     },
     type: convertVibeCodedEmploymentTypeToPrzemekType(employmentType),
@@ -168,20 +163,8 @@ export function bruteForceRequiredSalaryForTargetPension(
 
 export function simPensionByStartingAfterYears(
   appState: AppState,
-  years: number
 ) {
-  const zusConfig = prepareZusConfig(appState, {
-    yearOffset: years,
-  });
-
-  for (const periodIdx in zusConfig.employmentPeriods) {
-    zusConfig.employmentPeriods[periodIdx].from.year += years;
-    zusConfig.employmentPeriods[periodIdx].to.year += years;
-  }
-
-  zusConfig.retirementYear += years;
-  zusConfig.simStartYear += years;
-
+  const zusConfig = prepareZusConfig(appState);
   const result = calculateZusRetirement(zusConfig).monthlyRetirementAmount(0);
   return Math.round(result);
 }

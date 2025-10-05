@@ -60,14 +60,17 @@ const ZusScenarioView: React.FC = () => {
   };
 
   const ScenarioCard: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
-    const zusGain = simPensionByStartingAfterYears(snap, scenario.years);
-    const pensionAfterZus = snap.pension + zusGain;
-    console.log(scenario.years, zusGain);
+    const zusRetirementVariant = simPensionByStartingAfterYears({
+      ...snap,
+      retirementAge: snap.retirementAge + scenario.years
+    });
     const finalRetirementYear = getRetirementYear(
       snap.age,
       snap.retirementAge,
       scenario.years
     );
+
+    const deltaRetirement = zusRetirementVariant - snap.pension
 
     return (
       <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm hover:shadow-lg transition-all duration-200">
@@ -87,16 +90,16 @@ const ZusScenarioView: React.FC = () => {
         </div>
 
         <div className="text-center mb-4">
-          <p className="text-sm text-gray-500">Zysk z ZUS (miesięcznie)</p>
+          <p className="text-sm text-gray-500">Różnica</p>
           <p className="text-xl text-success font-bold">
-            +{Math.round(zusGain)} zł
+            +{Math.round(deltaRetirement)} zł
           </p>
         </div>
 
         <div className="text-center border-t border-gray-100 pt-4">
-          <p className="text-sm text-gray-600 font-medium">PO ZYSKU Z ZUS</p>
+          <p className="text-sm text-gray-600 font-medium">Nowa emerytura</p>
           <p className={`text-4xl font-extrabold text-primary`}>
-            {Math.round(pensionAfterZus)} zł
+            {Math.round(zusRetirementVariant)} zł
           </p>
         </div>
       </div>

@@ -194,7 +194,7 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
     // Step 3: Calculate base monthly retirement
     const baseMonthlyRetirement = totalZusAccountBalanceAtTimeOfRetirement / config.avgMonthsAliveAfterRetirement
     
-    // Step 3: Create function that returns retirement amount for any month
+    // Step 4: Create function that returns retirement amount for any month
     const monthlyRetirementAmount = (monthsAfterRetirementStart: number): number => {
         let currentRetirement = baseMonthlyRetirement
         

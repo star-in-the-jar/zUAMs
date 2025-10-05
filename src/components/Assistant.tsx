@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send } from '@mui/icons-material';
-import { OpenAIChatSession } from '@/ai';
-import { getToolDescriptions } from '@/aiTools';
+import { AIUtil } from '@/ai/ai';
+
 import { useSnapshot } from 'valtio';
 import { appState, type AppState } from '@/store/appState';
 import { GENDERS } from '@/const/genders';
@@ -50,19 +50,20 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const chatSessionRef = useRef<OpenAIChatSession | null>(null);
+  const aiUtilRef = useRef<AIUtil | null>(null);
 
-  // Initialize chat session
+  // Initialize AI utility
   useEffect(() => {
-    const session = new OpenAIChatSession({
-      model: 'gpt-4o-mini',
+    const aiUtil = new AIUtil({
+      model: 'gpt-4.1',
       temperature: 0.3,
       maxTokens: 1000,
     });
 
     // Set system message for retirement advisor
-    const basePrompt = `
-Jesteś Zeus - specjalista ds. emerytur i ubezpieczeń społecznych w Polsce.
+    const basePrompt = `Jesteś Zeus - specjalista ds. emerytur i ubezpieczeń społecznych w Polsce.
+
+AKTUALNY ROK: 2025
 
 ZAKRES TEMATYCZNY:
 ZAWSZE odpowiadaj TYLKO w języku polskim i WYŁĄCZNIE na tematy związane z:
@@ -74,22 +75,30 @@ ZAWSZE odpowiadaj TYLKO w języku polskim i WYŁĄCZNIE na tematy związane z:
 NIGDY nie odpowiadaj na pytania spoza tych tematów.
 
 STYL KOMUNIKACJI:
-Tłumacz wszystko BARDZO PROSTO, jak 15 latkowi. Unikaj skomplikowanych terminów.
-Używaj prostego, przyjaznego języka i konkretnych przykładów z polskim prawem. Zawsze bierz pod uwagę tylko najnowsze założenia dotyczące użytownika.
+Tłumacz wszystko BARDZO PROSTO. Unikaj skomplikowanych terminów.
+Używaj prostego, przyjaznego języka i konkretnych przykładów z polskim prawem. Zawsze bierz pod uwagę tylko najnowsze założenia dotyczące użytkownika.
+
+WAŻNA INFORMACJA O ZWOLNIENIACH:
+Pamiętaj, że przeciętna osoba w Polsce korzysta z około 1 miesiąca zwolnienia chorobowego (L4) rocznie. To może wpływać na wysokość składek ZUS i przyszłą emeryturę.
 
 FORMAT ODPOWIEDZI:
 NIE używaj formatowania Markdown. Pisz TYLKO zwykłym tekstem (plaintext).
 Zamiast **pogrubienia** używaj WIELKICH LITER dla podkreślenia. Odpowiadaj króto i rzeczowo.
 
 WYKONYWANIE OBLICZEŃ:
-Gdy użytkownik pyta o emeryturę - NATYCHMIAST użyj narzędzia calculateRetirement.
-NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
-    `;
+Gdy użytkownik pyta o emeryturę - dopytaj o:
+1. To ile zarabia na uop (brutto)
+2. W jakim wieku chce przejśc na emeryture
+3. Ile ma lat
+4. Ile lat już pracuje
+5. Jakiej jest płci
 
-    session.setSystemMessage(basePrompt + '\n' + getToolDescriptions());
+Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to za Ciebie.
+`;
 
-    chatSessionRef.current = session;
-  }, []);
+    aiUtil.setSystemMessage(basePrompt);
+    aiUtilRef.current = aiUtil;
+  }, [userInfoPrompt]);
 
   const suggestedPrompts: SuggestedPrompt[] = [
     { id: '2', text: 'O ile zmniejszy mi się emerytura jeśli pójdę na macierzyński?' },
@@ -105,7 +114,7 @@ NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading || !chatSessionRef.current) return;
+    if (!inputValue.trim() || isLoading || !aiUtilRef.current) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -126,18 +135,29 @@ NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
     setInputValue('');
     setIsLoading(true);
 
-    await chatSessionRef.current.streamMessage(
-      userMessage.text,
-      (chunk: string) => {
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === aiMessageId
-              ? { ...msg, text: msg.text + chunk }
-              : msg
-          )
-        );
-      }
-    );
+    try {
+      await aiUtilRef.current.streamMessage(
+        userMessage.text,
+        (chunk: string) => {
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === aiMessageId
+                ? { ...msg, text: msg.text + chunk }
+                : msg
+            )
+          );
+        }
+      );
+    } catch (error) {
+      console.error('Error generating response:', error);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === aiMessageId
+            ? { ...msg, text: 'Przepraszam, wystąpił błąd podczas generowania odpowiedzi. Spróbuj ponownie.' }
+            : msg
+        )
+      );
+    }
 
     setIsLoading(false);
   };
@@ -150,7 +170,7 @@ NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
   };
 
   const handleSuggestedPrompt = async (prompt: string) => {
-    if (isLoading || !chatSessionRef.current) return;
+    if (isLoading || !aiUtilRef.current) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -170,18 +190,29 @@ NIE mów "przeliczę za chwilę" - od razu wykonaj obliczenia!
     setMessages(prev => [...prev, userMessage, aiMessage]);
     setIsLoading(true);
 
-    await chatSessionRef.current.streamMessage(
-      prompt + '\n' + userInfoPrompt,
-      (chunk: string) => {
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === aiMessageId
-              ? { ...msg, text: msg.text + chunk }
-              : msg
-          )
-        );
-      }
-    );
+    try {
+      await aiUtilRef.current.streamMessage(
+        prompt,
+        (chunk: string) => {
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === aiMessageId
+                ? { ...msg, text: msg.text + chunk }
+                : msg
+            )
+          );
+        }
+      );
+    } catch (error) {
+      console.error('Error generating response:', error);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === aiMessageId
+            ? { ...msg, text: 'Przepraszam, wystąpił błąd podczas generowania odpowiedzi. Spróbuj ponownie.' }
+            : msg
+        )
+      );
+    }
 
     setIsLoading(false);
   };

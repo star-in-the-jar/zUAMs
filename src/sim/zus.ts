@@ -1,6 +1,7 @@
 // ZUS Retirement Calculator Types
 import type { Gender } from '@/const/genders'
 import { GENDERS } from '@/const/genders'
+import { MINIMAL_PENSION } from '@/const/pension'
 
 /**
  * Period types for employment
@@ -210,6 +211,11 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
                 const yearFromStart = Math.floor(month / 12)
                 currentRetirement *= config.yearlyRetirementValorizationMul(yearFromStart)
             }
+        }
+
+        // Apply minimal pension guarantee
+        if (currentRetirement < MINIMAL_PENSION && isEligibleForMinimalRetirement) {
+            return MINIMAL_PENSION
         }
 
         return currentRetirement

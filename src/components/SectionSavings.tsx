@@ -32,43 +32,44 @@ const SectionSavings: React.FC = () => {
         <div className="flex flex-col gap-y-4">
           <UnchangedField field="collectedZusBenefits">
             <div className="w-full flex flex-col gap-y-1">
-              <label className="label">
+              <label>
                 <span className="font-medium label-text">
                   Zebrane świadczenia ZUS
                 </span>
+                <div className="input w-full">
+                  <input
+                    value={snap.collectedZusBenefits}
+                    className="grow"
+                    type="number"
+                    min="0"
+                    onChange={handleCollectedZusBenefitsChange}
+                  />
+                  PLN
+                </div>
               </label>
-              <div className="input w-full">
-                <input
-                  value={snap.collectedZusBenefits}
-                  className="grow"
-                  type="number"
-                  min="0"
-                  onChange={handleCollectedZusBenefitsChange}
-                />
-                PLN
-              </div>
             </div>
           </UnchangedField>
 
           <UnchangedField field="additionalSavings">
             <div className="w-full flex flex-col gap-y-1">
-              <label className="label">
+              <label>
                 <span className="font-medium label-text">
                   Dodatkowe oszczędności
                 </span>
+                <div className="input w-full">
+                  <input
+                    value={snap.additionalSavings}
+                    className="grow"
+                    type="number"
+                    min="0"
+                    onChange={handleAdditionalSavingsChange}
+                  />
+                  PLN
+                </div>
               </label>
-              <div className="input w-full">
-                <input
-                  value={snap.additionalSavings}
-                  className="grow"
-                  type="number"
-                  min="0"
-                  onChange={handleAdditionalSavingsChange}
-                />
-                PLN
-              </div>
+
               <div className="label">
-                <span className="label-text-alt text-base-content/60">
+                <span className="label-text-alt">
                   Dodatkowe oszczędności odłożone w ramach II i III filaru, np.
                   IKE, IKZE
                 </span>

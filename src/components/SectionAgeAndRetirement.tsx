@@ -49,7 +49,7 @@ const SectionAgeAndRetirement: React.FC = () => {
             </label>
             <GenderButtons />
             <div className="label">
-              <span className="label-text-alt text-base-content/60">
+              <span className="label-text-alt">
                 Mężczyźni mogą prześć na emeryturę w wieku 65 lat, kobiety w
                 wieku 60 lat
               </span>

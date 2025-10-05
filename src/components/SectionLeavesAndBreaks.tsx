@@ -41,7 +41,7 @@ const SectionLeavesAndBreaks: React.FC = () => {
                 />
               </label>
               <div className="label">
-                <span className="label-text-alt text-base-content/60">
+                <span className="label-text-alt">
                   Liczba planowanych urlopów macierzyńskich w trakcie kariery
                   zawodowej
                 </span>

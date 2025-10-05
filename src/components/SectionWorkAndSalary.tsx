@@ -35,22 +35,22 @@ const SectionWorkAndSalary: React.FC = () => {
         <h2 className="text-xl card-title text-primary">Podstawowe dane</h2>
         <div className="flex flex-col gap-y-4">
           <div className="form-control">
-            <label className="label">
+            <label>
               <span className="font-medium label-text">
                 W jakim wieku przejdziesz na emeryturę?
               </span>
+              <div className="input w-full">
+                <input
+                  value={snap.retirementAge}
+                  className="grow"
+                  type="number"
+                  min={MIN_AGE}
+                  max={MAX_AGE}
+                  onChange={handleRetirementAgeChange}
+                />
+                lat
+              </div>
             </label>
-            <div className="input w-full">
-              <input
-                value={snap.retirementAge}
-                className="grow"
-                type="number"
-                min={MIN_AGE}
-                max={MAX_AGE}
-                onChange={handleRetirementAgeChange}
-              />
-              lat
-            </div>
           </div>
 
           <UnchangedField field="employmentType">
@@ -79,7 +79,7 @@ const SectionWorkAndSalary: React.FC = () => {
                 />
               </div>
               <div className="label">
-                <span className="label-text-alt text-base-content/60">
+                <span className="label-text-alt">
                   Umowa o pracę (UoP) lub Jednoosobowa działalność gospodarcza
                   (JDG)
                 </span>

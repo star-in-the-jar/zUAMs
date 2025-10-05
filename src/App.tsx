@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "@/views/Home";
 import Calculator from "@/views/Calculator";
 import Layout from "@/components/Layout";
@@ -12,13 +12,15 @@ function App() {
 
   return (
     <div className="px-16 py-8 min-h-screen">
-      {!isHome ? (
-        <header className="flex justify-center items-center pb-8">
-          <LogoZeus />
-        </header>
-      ) : null}
-      <main>
-        <BrowserRouter>
+      <BrowserRouter>
+        <main>
+          {!isHome ? (
+            <Link to="/">
+              <header className="flex justify-center items-center pb-8">
+                <LogoZeus />
+              </header>
+            </Link>
+          ) : null}
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -30,8 +32,8 @@ function App() {
               />
             </Routes>
           </Layout>
-        </BrowserRouter>
-      </main>
+        </main>
+      </BrowserRouter>
     </div>
   );
 }

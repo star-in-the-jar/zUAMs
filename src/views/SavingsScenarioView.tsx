@@ -1,4 +1,5 @@
-import React, { useState, ChangeEvent } from "react";
+import type React from "react";
+import { useState, ChangeEvent } from "react";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
 import { calculatePension } from "@/core/calculatePension";
@@ -7,6 +8,8 @@ import {
   CurrencyDollarIcon,
   TrophyIcon,
   InformationCircleIcon,
+  ClockIcon,
+  CalculatorIcon,
 } from "@heroicons/react/24/outline";
 
 interface Scenario {
@@ -20,9 +23,10 @@ const scenarios: Scenario[] = [
   { years: 0, label: "Do emerytury" },
 ];
 
-const ANNUAL_RETURN_RATE = 0.05;
+const ANNUAL_RETURN_RATE = 0.05; // Zachowane jako informacja, ale nie używane w obliczeniu
 const RETIREMENT_AGE = { MALE: 65, FEMALE: 60 };
 const AVERAGE_LIFE_EXPECTANCY = { MALE: 75, FEMALE: 82 };
+const FIXED_PAYOUT_MONTHS = 120; // KLUCZOWA ZMIANA: Wypłata przez 10 lat
 
 const SavingsScenarioView: React.FC = () => {
   const snap = useSnapshot(appState);
@@ -36,31 +40,25 @@ const SavingsScenarioView: React.FC = () => {
     ? AVERAGE_LIFE_EXPECTANCY.MALE
     : AVERAGE_LIFE_EXPECTANCY.FEMALE;
 
-  const currentPension = calculatePension(snap);
+  const currentPension = Number(snap.pension) || 0;
 
   const getInvestmentYears = (scenarioYears: number): number => {
     if (scenarioYears > 0) return scenarioYears;
-    return Math.max(0, statutoryRetirementAge - snap.age);
+    return Math.max(1, statutoryRetirementAge - snap.age);
   };
 
   const getInvestmentResults = (years: number, monthlySavings: number) => {
     const investmentMonths = years * 12;
-    const retirementYears = Math.max(
-      1,
-      lifeExpectancy - statutoryRetirementAge
-    );
-    const retirementMonths = retirementYears * 12;
+
     const totalSaved = monthlySavings * investmentMonths;
-    const compoundFactor = Math.pow(1 + ANNUAL_RETURN_RATE, years);
-    const totalCapital = totalSaved * compoundFactor;
-    const monthlyPensionGain =
-      retirementMonths > 0 ? totalCapital / retirementMonths : 0;
+
+    const monthlyPensionGain = totalSaved / FIXED_PAYOUT_MONTHS;
 
     return {
       totalSaved: Math.round(totalSaved),
       monthlyGain: Math.round(monthlyPensionGain),
-      retirementYears,
-      retirementMonths,
+      retirementYears: FIXED_PAYOUT_MONTHS / 12,
+      retirementMonths: FIXED_PAYOUT_MONTHS,
     };
   };
 
@@ -78,6 +76,8 @@ const SavingsScenarioView: React.FC = () => {
       scenario.years === 0
         ? `Inwestujesz do ${statutoryRetirementAge} r.ż. (${years} lat)`
         : `Inwestujesz przez ${years} lat`;
+
+    const totalMonthly = currentPension + monthlyGain;
 
     return (
       <div className="bg-white p-4 shadow-sm hover:shadow-lg transition-all duration-200">
@@ -106,8 +106,7 @@ const SavingsScenarioView: React.FC = () => {
             +{monthlyGain.toLocaleString("pl-PL")} zł
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            na {retirementMonths} miesięcy (zakładamy, że emerytura trwa{" "}
-            {retirementYears} lat)
+            na {retirementMonths} miesięcy (wypłata przez {retirementYears} lat)
           </p>
         </div>
 
@@ -116,8 +115,7 @@ const SavingsScenarioView: React.FC = () => {
             Łącznie miesięcznie
           </p>
           <p className="text-4xl font-extrabold text-primary">
-            {Math.round(currentPension + monthlyGain).toLocaleString("pl-PL")}{" "}
-            zł
+            {Math.round(totalMonthly).toLocaleString("pl-PL")} zł
           </p>
         </div>
       </div>
@@ -133,7 +131,7 @@ const SavingsScenarioView: React.FC = () => {
       <p className="mb-6 text-gray-600 text-lg text-center">
         Bazowa emerytura:{" "}
         <span className="font-bold text-primary">
-          {Math.round(snap.pension)} zł/mc
+          {Math.round(currentPension).toLocaleString("pl-PL")} zł/mc
         </span>{" "}
       </p>
 

@@ -174,7 +174,7 @@ const SavingsScenarioView: React.FC = () => {
 
       <p className="text-center text-xl text-base-content/70 mb-8">
         Bazowa emerytura:{" "}
-        <span className="font-bold">{Math.round(currentPension)} zł/mc</span>
+        <span className="font-bold">{Math.round(snap.pension)} zł/mc</span>
         <span className="ml-4 text-sm">
           (Płeć: {isMale ? "Mężczyzna, 65 lat" : "Kobieta, 60 lat"})
         </span>

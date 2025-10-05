@@ -54,12 +54,12 @@ const SectionBasicData: React.FC = () => {
   return (
     <div className="bg-white text-base-content card">
       <div className="p-0 card-body">
-        <h2 className="text-primary text-xl card-title">Podstawowe dane</h2>
+        {/* <h2 className="text-primary text-xl card-title">Podstawowe dane</h2> */}
         <div className="flex flex-col gap-y-4">
           <div className="form-control">
             <label>
               <span className="font-medium label-text">
-                W jakim wieku przejdziesz na emeryturę?
+              Przedziesz na emeryturę w wieku
               </span>
               <div className="w-full input">
                 <input
@@ -78,7 +78,7 @@ const SectionBasicData: React.FC = () => {
           <UnchangedField field="employmentType">
             <div className="flex flex-col gap-y-1 w-full">
               <label className="label">
-                <span className="font-medium label-text">Typ zatrudnienia</span>
+                <span className="font-medium label-text">Pracujesz na</span>
               </label>
               <div className="w-full join">
                 <input
@@ -113,7 +113,7 @@ const SectionBasicData: React.FC = () => {
             <div className="flex flex-col gap-y-1 w-full">
               <label>
                 <span className="font-medium label-text">
-                  Wynagrodzenie miesięczne brutto
+                  Zarabiasz miesięcznie
                 </span>
                 <div className="w-full input">
                   <input
@@ -123,7 +123,7 @@ const SectionBasicData: React.FC = () => {
                     min="0"
                     onChange={handleMonthlyGrossSalaryChange}
                   />
-                  zł
+                  zł brutto
                 </div>
               </label>
             </div>
@@ -133,7 +133,7 @@ const SectionBasicData: React.FC = () => {
             <div className="flex flex-col gap-y-1 w-full">
               <label>
                 <span className="font-medium label-text">
-                  W jakim wieku zacząłeś/zaczniesz pracować?
+                  Zacząłeś/zaczniesz pracować w wieku
                 </span>
                 <div className="w-full input">
                   <input

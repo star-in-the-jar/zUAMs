@@ -41,13 +41,13 @@ const Result: React.FC = () => {
   return (
     <div className="flex flex-col items-center pb-20">
       <div className="w-full max-w-2xl">
-        <h1 className="mb-4 font-semibold text-primary text-4xl">
-          Zakładając, że
-        </h1>
-        <div className="bg-accent/30 mb-12 text-accent-content alert">
+        <div className="bg-accent/30 mb-4 text-accent-content alert">
           <ErrorIcon />
           {getAlertText()}
         </div>
+        <h1 className="mb-4 font-semibold text-primary text-4xl">
+          Zakładając, że
+        </h1>
         <div className="mb-12">
           <SectionBasicData />
         </div>
@@ -69,7 +69,7 @@ const Result: React.FC = () => {
             </div>
 
             {/* 2. SCENARIUSZE ZUS */}
-            <div className="collapse collapse-arrow bg-primary/5 text-primary mt-6">
+            <div className="collapse collapse-arrow bg-primary/5 mt-6 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
                 Scenariusze ZUS
@@ -80,7 +80,7 @@ const Result: React.FC = () => {
             </div>
 
             {/* 3. SCENARIUSZE OSZCZĘDNOŚCI (POPRAWIONY BLOK) */}
-            <div className="collapse collapse-arrow bg-primary/5 text-primary mt-6">
+            <div className="collapse collapse-arrow bg-primary/5 mt-6 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
                 Scenariusze Oszczędności

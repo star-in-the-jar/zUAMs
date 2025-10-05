@@ -34,7 +34,10 @@ export const calculatePension = (appState: AppState) => {
   return Math.round(value);
 };
 
-const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
+const prepareZusConfig = (
+  appState: AppState,
+  options: { yearOffset?: number } = {}
+): ZusRetirementConfig => {
   const {
     age,
     retirementAge,
@@ -49,18 +52,21 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
   } = appState;
   const normalizedGender = gender ?? GENDERS.MALE;
 
-  const workSinceYear = calculateStartSimYear(age, workSinceAge);
+  const workSinceYear =
+    (options?.yearOffset ?? 0) + calculateStartSimYear(age, workSinceAge);
 
   const employmentPeriodWithoutFn: Omit<
     EmploymentPeriod,
     "grossMonthlySalary" | "monthlyZusContribution"
   > = {
     from: {
-      year: workSinceYear,
+      year: (options?.yearOffset ?? 0) + workSinceYear,
       month: 1,
     },
     to: {
-      year: calculateRetirementYear(age, normalizedGender, retirementAge),
+      year:
+        (options?.yearOffset ?? 0) +
+        calculateRetirementYear(age, normalizedGender, retirementAge),
       month: 12,
     },
     type: convertVibeCodedEmploymentTypeToPrzemekType(employmentType),
@@ -160,10 +166,22 @@ export function bruteForceRequiredSalaryForTargetPension(
   return result;
 }
 
-export function calculatePensionByMonths(appState: AppState, months: number) {
-  const zusConfig = prepareZusConfig(appState);
+export function simPensionByStartingAfterYears(
+  appState: AppState,
+  years: number
+) {
+  const zusConfig = prepareZusConfig(appState, {
+    yearOffset: years,
+  });
 
-  const result =
-    calculateZusRetirement(zusConfig).monthlyRetirementAmount(months);
+  for (const periodIdx in zusConfig.employmentPeriods) {
+    zusConfig.employmentPeriods[periodIdx].from.year += years;
+    zusConfig.employmentPeriods[periodIdx].to.year += years;
+  }
+
+  zusConfig.retirementYear += years;
+  zusConfig.simStartYear += years;
+
+  const result = calculateZusRetirement(zusConfig).monthlyRetirementAmount(0);
   return Math.round(result);
 }

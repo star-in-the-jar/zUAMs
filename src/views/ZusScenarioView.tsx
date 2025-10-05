@@ -13,11 +13,12 @@ import {
   ClockIcon,
   BanknotesIcon,
   PresentationChartLineIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { calculatePensionByMonths } from "@/core/calculatePension";
+import { simPensionByStartingAfterYears } from "@/core/calculatePension";
 
 interface Scenario {
-  years: number; // 2, 4, 8 lat wydłużenia pracy
+  years: number;
   label: string;
 }
 
@@ -47,73 +48,6 @@ function getMockEmploymentPeriods(
 
 const ZusScenarioView: React.FC = () => {
   const snap = useSnapshot(appState);
-  const EXPECTED_PENSION = 6500;
-  const basePensionFromState = Number(snap.pension) || 0;
-  const hardcodedBasePension = 6500;
-  const currentPension = basePensionFromState || hardcodedBasePension;
-  const isMale = snap.gender === GENDERS.MALE || snap.gender === undefined;
-  const startWorkingYear =
-    new Date().getFullYear() - (snap.age - START_WORKING_AGE);
-  const statsDelay = isMale ? STATS_DELAY_YEARS.MALE : STATS_DELAY_YEARS.FEMALE;
-  const statsRetirementAge = snap.retirementAge + statsDelay;
-  const yearsToRetirement = statsRetirementAge - snap.age;
-  const retirementYear =
-    new Date().getFullYear() + Math.floor(yearsToRetirement);
-  const MOCK_AVG_MONTHS = 1;
-
-  const baseConfig: ZusRetirementConfig = useMemo(
-    () => ({
-      employmentPeriods: getMockEmploymentPeriods(
-        startWorkingYear,
-        retirementYear,
-        snap.currentMonthlySalary || 5000
-      ),
-      gender: snap.gender ?? GENDERS.MALE,
-      simStartYear: startWorkingYear,
-      retirementYear: retirementYear,
-      retirementMonth: 1,
-      avgMonthsAliveAfterRetirement: MOCK_AVG_MONTHS,
-      monthsOfStudying: 0,
-      yearlyValorizationCoef: (year: number) => 1.005, // Zmniejszona dla urealnienia
-      yearlyRetirementValorizationMul: (yearFromStart: number) => 1.005,
-    }),
-    [
-      snap.age,
-      snap.retirementAge,
-      snap.gender,
-      snap.currentMonthlySalary,
-      retirementYear,
-    ]
-  );
-
-  const baseResultForSim = calculateZusRetirement(baseConfig);
-  const currentPensionFromSim = baseResultForSim.monthlyRetirementAmount(0);
-
-  const calculateScenarioPensionPureGain = (addedYears: number) => {
-    const newRetirementAge = snap.retirementAge + addedYears;
-    const newRetirementYear =
-      new Date().getFullYear() + (newRetirementAge - snap.age);
-
-    const scenarioConfig: ZusRetirementConfig = {
-      ...baseConfig,
-      retirementYear: newRetirementYear,
-      avgMonthsAliveAfterRetirement: MOCK_AVG_MONTHS,
-      employmentPeriods: getMockEmploymentPeriods(
-        startWorkingYear,
-        newRetirementYear,
-        snap.currentMonthlySalary || 5000
-      ),
-    };
-
-    const result = calculateZusRetirement(scenarioConfig);
-    const newPensionFromSim = result.monthlyRetirementAmount(0);
-
-    // Zysk to różnica: Nowa kwota z symulacji - Stara kwota z symulacji
-    const zusGain = newPensionFromSim - currentPensionFromSim;
-
-    // Funkcja zwraca tylko różnicę
-    return zusGain;
-  };
 
   const getRetirementYear = (
     age: number,
@@ -125,69 +59,45 @@ const ZusScenarioView: React.FC = () => {
     return currentYear + Math.floor(yearsToRetirement);
   };
 
-  const getColorClass = (value: number) => {
-    const roundedValue = Math.round(value);
-    if (roundedValue >= EXPECTED_PENSION) return "text-success";
-    if (roundedValue < EXPECTED_PENSION) return "text-error";
-    return "text-base-content";
-  };
-
-  const ScenarioColumn: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
-    const zusGain = calculateScenarioPensionPureGain(scenario.years);
-    const pensionAfterZus = currentPension + zusGain;
+  const ScenarioCard: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
+    const zusGain = simPensionByStartingAfterYears(snap, scenario.years);
+    const pensionAfterZus = snap.pension + zusGain;
+    console.log(scenario.years, zusGain);
     const finalRetirementYear = getRetirementYear(
       snap.age,
       snap.retirementAge,
       scenario.years
     );
-    const colorAfterZus = getColorClass(pensionAfterZus);
 
     return (
-      <div className="bg-base-100 shadow-xl border border-primary/20 w-full card">
-        <div className="p-5 card-body">
-          <h2 className="justify-center mb-3 pb-2 border-primary/50 border-b-2 text-primary text-2xl card-title">
-            <PresentationChartLineIcon className="mr-2 w-6 h-6" />
-            {scenario.label}
-          </h2>
+      <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm hover:shadow-lg transition-all duration-200">
+        <div className="flex items-center justify-center gap-2 text-primary font-bold text-xl mb-3">
+          <PresentationChartLineIcon className="w-6 h-6" />
+          {scenario.label}
+        </div>
 
-          <div className="bg-base-200 shadow mb-4 stats stats-vertical">
-            <div className="place-items-center p-3 stat">
-              <div className="flex items-center text-info stat-title">
-                <ClockIcon className="mr-1 w-5 h-5" />
-                Wydłużenie pracy
-              </div>
-              <div className="flex items-center text-success stat-value">
-                +{scenario.years} lat
-              </div>
-              <div className="text-sm stat-desc">
-                Emerytura od {finalRetirementYear} r.
-              </div>
-            </div>
+        <div className="text-center mb-4">
+          <p className="text-sm text-gray-500">Wydłużenie pracy</p>
+          <p className="text-2xl text-success font-semibold">
+            +{scenario.years} lata
+          </p>
+          <p className="text-xs text-gray-400">
+            Emerytura od {finalRetirementYear} r.
+          </p>
+        </div>
 
-            <div className="place-items-center p-3 border-gray-300 border-t stat">
-              <div className="flex items-center text-info stat-title">
-                <BanknotesIcon className="mr-1 w-5 h-5" />
-                Zysk z ZUS (mc)
-              </div>
-              <div className="text-success text-2xl stat-value">
-                +
-                {calculatePensionByMonths(snap, scenario.years * 12) -
-                  snap.pension}{" "}
-                zł
-              </div>
-            </div>
+        <div className="text-center mb-4">
+          <p className="text-sm text-gray-500">Zysk z ZUS (miesięcznie)</p>
+          <p className="text-xl text-success font-bold">
+            +{Math.round(zusGain)} zł
+          </p>
+        </div>
 
-            <div className="place-items-center bg-base-300 p-3 border-primary/20 border-t stat">
-              <div className="font-bold text-base-content text-lg stat-title">
-                PO ZYSKU Z ZUS:
-              </div>
-              <div
-                className={`stat-value text-4xl font-extrabold ${colorAfterZus}`}
-              >
-                {calculatePensionByMonths(snap, scenario.years * 12)} zł
-              </div>
-            </div>
-          </div>
+        <div className="text-center border-t border-gray-100 pt-4">
+          <p className="text-sm text-gray-600 font-medium">PO ZYSKU Z ZUS</p>
+          <p className={`text-4xl font-extrabold text-primary`}>
+            {Math.round(pensionAfterZus)} zł
+          </p>
         </div>
       </div>
     );
@@ -199,34 +109,37 @@ const ZusScenarioView: React.FC = () => {
         ZUS: Dłuższa Praca
       </h1>
 
-      <p className="mb-8 text-base-content/70 text-xl text-center">
-        Bazowa emerytura (zgodnie z prognozą ZUS):{" "}
-        <span className="font-bold">{Math.round(currentPension)} zł/mc</span>
+      <p className="mb-8 text-gray-600 text-lg text-center">
+        Bazowa emerytura (prognoza ZUS):{" "}
+        <span className="font-bold text-primary">
+          {Math.round(snap.pension)} zł/mc
+        </span>
       </p>
 
-      <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3">
         {scenarios.map((scenario) => (
-          <ScenarioColumn key={scenario.years} scenario={scenario} />
+          <ScenarioCard key={scenario.years} scenario={scenario} />
         ))}
       </div>
 
-      <div className="alert alert-info shadow-lg mx-auto mt-10 max-w-4xl">
-        <span>
-          Czy wiedziałeś, że zostając na emeryturze powyżej 2 lat względem
-          ustawowego wieku emerytalnego, należysz do 3,7% społeczeństwa w
-          przypadku mężczyzn 8,5% w przypadku kobiet? (dane z r.2024). Względem
-          roku 2022 odnotowano w tej grupie spadek o kolejno: 0,1% dla mężczyzn
-          o 0,3% dla kobiet.
-        </span>
-      </div>
-      <div className="alert alert-info shadow-lg mx-auto mt-6 max-w-4xl">
-        <span>
-          Warto jednak zaznaczyć, że w przeciągu dwóch lat (2022-2024)
-          odnotowano spadek osób przechodzących na emeryturę równo w wieku
-          emerytalnym (o 3,9% w przypadku mężczyzn i 2,4% w przypadku kobiet).
-          Oznacza to, że coraz więcej osób przechodzi na emeryturę później w
-          celu uzyskania wyższych składek emerytalnych.
-        </span>
+      <div className="mt-10 space-y-4 max-w-4xl mx-auto">
+        <div className="flex items-start gap-3 bg-blue-50 p-4 rounded-xl shadow-sm">
+          <InformationCircleIcon className="w-6 h-6 text-blue-500 mt-1" />
+          <p className="text-sm text-blue-700">
+            Tylko 3,7% mężczyzn i 8,5% kobiet pracuje dłużej niż 2 lata po
+            osiągnięciu wieku emerytalnego (dane z 2024 r.). Względem 2022 r. to
+            spadek o 0,1% dla mężczyzn i 0,3% dla kobiet.
+          </p>
+        </div>
+
+        <div className="flex items-start gap-3 bg-blue-50 p-4 rounded-xl shadow-sm">
+          <InformationCircleIcon className="w-6 h-6 text-blue-500 mt-1" />
+          <p className="text-sm text-blue-700">
+            Coraz więcej osób przechodzi na emeryturę później, by uzyskać wyższe
+            świadczenia — w latach 2022–2024 liczba osób odchodzących dokładnie
+            w wieku emerytalnym spadła o 3,9% u mężczyzn i 2,4% u kobiet.
+          </p>
+        </div>
       </div>
     </div>
   );

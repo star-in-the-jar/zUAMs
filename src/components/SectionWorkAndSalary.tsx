@@ -1,10 +1,10 @@
 import React from "react";
 import { useSnapshot } from "valtio";
-import { appState } from "@/store/appState";
+import { appState, setAndMarkAsChanged } from "@/store/appState";
 import UnchangedField from "./UnchangedField";
 
 const handleEmploymentTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  appState.employmentType = e.target.value as "UoP" | "JDG";
+  setAndMarkAsChanged("employmentType", e.target.value as "UoP" | "JDG");
 };
 
 const handleMonthlyGrossSalaryChange = (
@@ -13,7 +13,7 @@ const handleMonthlyGrossSalaryChange = (
   const val = e.target.value;
   const num = Number(val);
   if (!isNaN(num) && num >= 0) {
-    appState.monthlyGrossSalary = num;
+    setAndMarkAsChanged("monthlyGrossSalary", num);
   }
 };
 
@@ -22,12 +22,10 @@ const SectionWorkAndSalary: React.FC = () => {
   return (
     <div className="bg-white text-base-content card">
       <div className="p-4 card-body">
-        <h3 className="mb-4 text-primary text-lg card-title">
-          Praca i zarobki
-        </h3>
+        <h3 className="text-lg card-title text-primary">Praca i zarobki</h3>
         <div className="flex flex-col gap-y-4">
           <UnchangedField field="employmentType">
-            <div className="flex flex-col gap-y-1">
+            <div className="flex flex-col gap-y-1 w-full">
               <label className="label">
                 <span className="font-medium label-text">Typ zatrudnienia</span>
               </label>
@@ -59,23 +57,25 @@ const SectionWorkAndSalary: React.FC = () => {
               </div>
             </div>
           </UnchangedField>
-          <div className="flex flex-col gap-y-1">
-            <label className="label">
-              <span className="font-medium label-text">
-                Wynagrodzenie miesięczne brutto
-              </span>
-            </label>
-            <div className="input w-full">
-              <input
-                value={snap.monthlyGrossSalary}
-                className="grow"
-                type="number"
-                min="0"
-                onChange={handleMonthlyGrossSalaryChange}
-              />
-              PLN
+          <UnchangedField field="monthlyGrossSalary">
+            <div className="flex flex-col gap-y-1 w-full">
+              <label>
+                <span className="font-medium label-text">
+                  Wynagrodzenie miesięczne brutto
+                </span>
+                <div className="input w-full">
+                  <input
+                    value={snap.monthlyGrossSalary}
+                    className="grow"
+                    type="number"
+                    min="0"
+                    onChange={handleMonthlyGrossSalaryChange}
+                  />
+                  PLN
+                </div>
+              </label>
             </div>
-          </div>
+          </UnchangedField>
         </div>
       </div>
     </div>

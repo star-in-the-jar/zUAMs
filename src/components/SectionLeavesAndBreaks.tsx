@@ -1,6 +1,7 @@
 import React from "react";
 import { useSnapshot } from "valtio";
-import { appState } from "@/store/appState";
+import { appState, setAndMarkAsChanged } from "@/store/appState";
+import UnchangedField from "./UnchangedField";
 
 const handleMaternityLeavesChange = (
   e: React.ChangeEvent<HTMLInputElement>
@@ -8,14 +9,14 @@ const handleMaternityLeavesChange = (
   const val = e.target.value;
   const num = Number(val);
   if (!isNaN(num) && num >= 0) {
-    appState.maternityLeaves = num;
+    setAndMarkAsChanged("maternityLeaves", num);
   }
 };
 
 const handleAverageSickDaysChange = (
   e: React.ChangeEvent<HTMLInputElement>
 ) => {
-  appState.averageSickDays = e.target.checked;
+  setAndMarkAsChanged("averageSickDays", e.target.checked);
 };
 
 const SectionLeavesAndBreaks: React.FC = () => {
@@ -23,47 +24,46 @@ const SectionLeavesAndBreaks: React.FC = () => {
   return (
     <div className="bg-white text-base-content card">
       <div className="p-4 card-body">
-        <h3 className="mb-4 text-primary text-lg card-title">
-          Urlopy i przerwy
-        </h3>
+        <h3 className="text-lg card-title text-primary">Urlopy i przerwy</h3>
         <div className="flex flex-col gap-y-4">
-          <div className="form-control">
-            <label className="label">
-              <span className="font-medium label-text">
-                Liczba urlopów macierzyńskich
-              </span>
-            </label>
-            <input
-              value={snap.maternityLeaves}
-              className="input-bordered w-full input"
-              type="number"
-              min="0"
-              onChange={handleMaternityLeavesChange}
-            />
-            <div className="label">
-              <span className="label-text-alt text-base-content/60">
-                Liczba planowanych urlopów macierzyńskich w trakcie kariery
-                zawodowej
-              </span>
+          <UnchangedField field="maternityLeaves">
+            <div className="form-control">
+              <label>
+                <span className="font-medium label-text">
+                  Liczba urlopów macierzyńskich
+                </span>
+                <input
+                  value={snap.maternityLeaves}
+                  className="input-bordered w-full input"
+                  type="number"
+                  min="0"
+                  onChange={handleMaternityLeavesChange}
+                />
+              </label>
+              <div className="label">
+                <span className="label-text-alt text-base-content/60">
+                  Liczba planowanych urlopów macierzyńskich w trakcie kariery
+                  zawodowej
+                </span>
+              </div>
             </div>
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="font-medium label-text">Urlopy zdrowotne</span>
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="toggle toggle-primary"
-                checked={snap.averageSickDays}
-                onChange={handleAverageSickDaysChange}
-              />
-              <span className="text-sm">
-                Zamierzasz brać tyle urlopów zdrowotnych co przeciętny Polak (34
-                dni rocznie)
-              </span>
+          </UnchangedField>
+          <UnchangedField field="averageSickDays">
+            <div className="form-control">
+              <label className="label flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="toggle toggle-primary peer checked:bg-primary/15"
+                  checked={snap.averageSickDays}
+                  onChange={handleAverageSickDaysChange}
+                />
+                <span className="peer-checked:text-primary font-medium">
+                  Chcę brać tyle urlopów zdrowotnych co przeciętny Polak (34 dni
+                  rocznie)
+                </span>
+              </label>
             </div>
-          </div>
+          </UnchangedField>
         </div>
       </div>
     </div>

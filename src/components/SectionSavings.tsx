@@ -1,6 +1,7 @@
 import React from "react";
 import { useSnapshot } from "valtio";
-import { appState } from "@/store/appState";
+import { appState, setAndMarkAsChanged } from "@/store/appState";
+import UnchangedField from "./UnchangedField";
 
 const handleCollectedZusBenefitsChange = (
   e: React.ChangeEvent<HTMLInputElement>
@@ -8,7 +9,7 @@ const handleCollectedZusBenefitsChange = (
   const val = e.target.value;
   const num = Number(val);
   if (!isNaN(num) && num >= 0) {
-    appState.collectedZusBenefits = num;
+    setAndMarkAsChanged("collectedZusBenefits", num);
   }
 };
 
@@ -18,7 +19,7 @@ const handleAdditionalSavingsChange = (
   const val = e.target.value;
   const num = Number(val);
   if (!isNaN(num) && num >= 0) {
-    appState.additionalSavings = num;
+    setAndMarkAsChanged("additionalSavings", num);
   }
 };
 
@@ -27,48 +28,53 @@ const SectionSavings: React.FC = () => {
   return (
     <div className="bg-white text-base-content card">
       <div className="p-4 card-body">
-        <h3 className="mb-4 text-primary text-lg card-title">Oszczędności</h3>
+        <h3 className="text-lg card-title text-primary">Oszczędności</h3>
         <div className="flex flex-col gap-y-4">
-          <div className="flex flex-col gap-y-1">
-            <label className="label">
-              <span className="font-medium label-text">
-                Zebrane świadczenia ZUS
-              </span>
-            </label>
-            <div className="input w-full">
-              <input
-                value={snap.collectedZusBenefits}
-                className="grow"
-                type="number"
-                min="0"
-                onChange={handleCollectedZusBenefitsChange}
-              />
-              PLN
+          <UnchangedField field="collectedZusBenefits">
+            <div className="w-full flex flex-col gap-y-1">
+              <label className="label">
+                <span className="font-medium label-text">
+                  Zebrane świadczenia ZUS
+                </span>
+              </label>
+              <div className="input w-full">
+                <input
+                  value={snap.collectedZusBenefits}
+                  className="grow"
+                  type="number"
+                  min="0"
+                  onChange={handleCollectedZusBenefitsChange}
+                />
+                PLN
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-y-1">
-            <label className="label">
-              <span className="font-medium label-text">
-                Dodatkowe oszczędności
-              </span>
-            </label>
-            <div className="input w-full">
-              <input
-                value={snap.additionalSavings}
-                className="grow"
-                type="number"
-                min="0"
-                onChange={handleAdditionalSavingsChange}
-              />
-              PLN
+          </UnchangedField>
+
+          <UnchangedField field="additionalSavings">
+            <div className="w-full flex flex-col gap-y-1">
+              <label className="label">
+                <span className="font-medium label-text">
+                  Dodatkowe oszczędności
+                </span>
+              </label>
+              <div className="input w-full">
+                <input
+                  value={snap.additionalSavings}
+                  className="grow"
+                  type="number"
+                  min="0"
+                  onChange={handleAdditionalSavingsChange}
+                />
+                PLN
+              </div>
+              <div className="label">
+                <span className="label-text-alt text-base-content/60">
+                  Dodatkowe oszczędności odłożone w ramach II i III filaru, np.
+                  IKE, IKZE
+                </span>
+              </div>
             </div>
-            <div className="label">
-              <span className="label-text-alt text-base-content/60">
-                Oszczędności odłożone dodatkowo w ramach II i III filaru, np.
-                IKE, IKZE
-              </span>
-            </div>
-          </div>
+          </UnchangedField>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { useSnapshot } from "valtio";
-import { appState } from "@/store/appState";
+import { appState, setAndMarkAsChanged } from "@/store/appState";
 import SectionWorkAndSalary from "@/components/SectionWorkAndSalary";
 import SectionLeavesAndBreaks from "@/components/SectionLeavesAndBreaks";
 import SectionSavings from "@/components/SectionSavings";
@@ -27,9 +27,20 @@ const getRetirementYear = (age: number, retirementAge: number) => {
 const Result: React.FC = () => {
   const snap = useSnapshot(appState);
 
+  const getAlertText = () => {
+    switch (snap.gender) {
+      case GENDERS.MALE:
+        return "Pola oznaczone kolorem żółtym mają domyślne wartości statystycznego Polaka";
+      case GENDERS.FEMALE:
+        return "Pola oznaczone kolorem żółtym mają domyślne wartości statystycznej Polki";
+      default:
+        return "Pola oznaczone kolorem żółtym mają domyślne wartości statystycznego Polaka/Polki";
+    }
+  };
+
   React.useEffect(() => {
     if (!snap.gender) {
-      appState.gender = GENDERS.MALE;
+      setAndMarkAsChanged("gender", GENDERS.MALE);
     }
   }, []);
 
@@ -39,32 +50,33 @@ const Result: React.FC = () => {
         <h1 className="mb-6 font-semibold text-primary text-4xl">
           Zakładając, że
         </h1>
-        <div className="bg-accent text-accent-content alert">
+        <div className="alert bg-accent/30 text-accent-content">
           <ErrorIcon />
-          Pola oznaczone kolorem żółtym mają domyślne wartości statystycznego
-          Polaka/Polki
+          {getAlertText()}
         </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="font-medium label-text">W jakim wieku przejdziesz na emeryturę?</span>
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                value={snap.retirementAge}
-                className="input-bordered w-20 input"
-                type="number"
-                min={MIN_AGE}
-                max={MAX_AGE}
-                onChange={handleRetirementAgeChange}
-              />
-              <span className="text-sm">lat</span>
-            </div>
-            <div className="label">
-              <span className="label-text-alt text-base-content/60">
-                Czyli w {getRetirementYear(snap.age, snap.retirementAge)} roku
-              </span>
-            </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="font-medium label-text">
+              W jakim wieku przejdziesz na emeryturę?
+            </span>
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              value={snap.retirementAge}
+              className="input-bordered w-20 input"
+              type="number"
+              min={MIN_AGE}
+              max={MAX_AGE}
+              onChange={handleRetirementAgeChange}
+            />
+            <span className="text-sm">lat</span>
           </div>
+          <div className="label">
+            <span className="label-text-alt text-base-content/60">
+              Czyli w {getRetirementYear(snap.age, snap.retirementAge)} roku
+            </span>
+          </div>
+        </div>
         <form className="mb-6">
           <div className="flex flex-col gap-y-4 w-full">
             <div className="collapse collapse-arrow bg-primary/5 text-primary">

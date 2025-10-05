@@ -10,7 +10,6 @@ const Home: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     if (
-      snap.pension === "" ||
       isNaN(Number(snap.pension)) ||
       Number(snap.pension) <= 0 ||
       !snap.gender
@@ -24,7 +23,10 @@ const Home: React.FC = () => {
 
   return (
     <section className="flex flex-col justify-center items-center gap-y-4 mt-8 h-full">
-      <form onSubmit={handleSubmit} className="flex flex-col items-center gap-x-1">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-center gap-x-1"
+      >
         <SectionAgeAndRetirement />
         <button
           type="button"

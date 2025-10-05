@@ -52,3 +52,11 @@ export const appState = proxy<AppState>({
   currentMonthlySalary: 0,
   collectedZusBenefits: 0,
 });
+
+export const setAndMarkAsChanged = <K extends keyof AppState>(
+  key: K,
+  value: AppState[K]
+) => {
+  appState[key] = value;
+  wasAppStateFieldChanged[key] = true;
+};

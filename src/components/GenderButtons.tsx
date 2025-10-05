@@ -1,6 +1,6 @@
 import { GENDERS, type Gender } from "@/const/genders";
 import { useSnapshot } from "valtio";
-import { appState } from "@/store/appState";
+import { appState, setAndMarkAsChanged } from "@/store/appState";
 import { classMerge } from "@/utils/classMerge";
 import { RETIREMENT_AGE } from "@/const/age";
 
@@ -19,8 +19,8 @@ const GenderButtons = () => {
   const snap = useSnapshot(appState);
 
   const onClick = (gender: Gender) => {
-    appState.gender = gender;
-    appState.retirementAge = RETIREMENT_AGE[gender];
+    setAndMarkAsChanged("gender", gender);
+    setAndMarkAsChanged("retirementAge", RETIREMENT_AGE[gender]);
   };
 
   const renderButtonByGender = (gender: Gender) => {

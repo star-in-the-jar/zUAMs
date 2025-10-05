@@ -13,11 +13,12 @@ import {
   ClockIcon,
   BanknotesIcon,
   PresentationChartLineIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { calculatePensionByMonths } from "@/core/calculatePension";
+import { simPensionByStartingAfterYears } from "@/core/calculatePension";
 
 interface Scenario {
-  years: number; // 2, 4, 8 lat wydłużenia pracy
+  years: number;
   label: string;
 }
 
@@ -130,69 +131,48 @@ const ZusScenarioView: React.FC = () => {
     return currentYear + Math.floor(yearsToRetirement);
   };
 
-  const getColorClass = (value: number) => {
-    const roundedValue = Math.round(value);
-    if (roundedValue >= EXPECTED_PENSION) return "text-success";
-    if (roundedValue < EXPECTED_PENSION) return "text-error";
-    return "text-base-content";
-  };
-
-  const ScenarioColumn: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
-    const zusGain = calculateScenarioPensionPureGain(scenario.years);
-    const pensionAfterZus = currentPension + zusGain;
+  const ScenarioCard: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
+    const zusRetirementVariant = simPensionByStartingAfterYears({
+      ...snap,
+      retirementAge: snap.retirementAge + scenario.years
+    });
     const finalRetirementYear = getRetirementYear(
       snap.age,
       snap.retirementAge,
       scenario.years
     );
-    const colorAfterZus = getColorClass(pensionAfterZus);
+
+    const deltaRetirement = zusRetirementVariant - snap.pension
 
     return (
-      <div className="bg-base-100 shadow-xl border border-primary/20 w-full card">
-        <div className="p-5 card-body">
-          <h2 className="justify-center mb-3 pb-2 border-primary/50 border-b-2 text-primary text-2xl card-title">
-            <PresentationChartLineIcon className="mr-2 w-6 h-6" />
-            {scenario.label}
-          </h2>
+      <div className="bg-white shadow-sm hover:shadow-lg p-6 border border-gray-200 rounded-2xl transition-all duration-200">
+        <div className="flex justify-center items-center gap-2 mb-3 font-bold text-primary text-xl">
+          <PresentationChartLineIcon className="w-6 h-6" />
+          {scenario.label}
+        </div>
 
-          <div className="bg-base-200 shadow mb-4 stats stats-vertical">
-            <div className="place-items-center p-3 stat">
-              <div className="flex items-center text-info stat-title">
-                <ClockIcon className="mr-1 w-5 h-5" />
-                Wydłużenie pracy
-              </div>
-              <div className="flex items-center text-success stat-value">
-                +{scenario.years} lat
-              </div>
-              <div className="text-sm stat-desc">
-                Emerytura od {finalRetirementYear} r.
-              </div>
-            </div>
+        <div className="mb-4 text-center">
+          <p className="text-gray-500 text-sm">Wydłużenie pracy</p>
+          <p className="font-semibold text-success text-2xl">
+            +{scenario.years} lata
+          </p>
+          <p className="text-gray-400 text-xs">
+            Emerytura od {finalRetirementYear} r.
+          </p>
+        </div>
 
-            <div className="place-items-center p-3 border-gray-300 border-t stat">
-              <div className="flex items-center text-info stat-title">
-                <BanknotesIcon className="mr-1 w-5 h-5" />
-                Zysk z ZUS (mc)
-              </div>
-              <div className="text-success text-2xl stat-value">
-                +
-                {calculatePensionByMonths(snap, scenario.years * 12) -
-                  snap.pension}{" "}
-                zł
-              </div>
-            </div>
+        <div className="mb-4 text-center">
+          <p className="text-gray-500 text-sm">Różnica</p>
+          <p className="font-bold text-success text-xl">
+            +{Math.round(deltaRetirement)} zł
+          </p>
+        </div>
 
-            <div className="place-items-center bg-base-300 p-3 border-primary/20 border-t stat">
-              <div className="font-bold text-base-content text-lg stat-title">
-                PO ZYSKU Z ZUS:
-              </div>
-              <div
-                className={`stat-value text-4xl font-extrabold ${colorAfterZus}`}
-              >
-                {calculatePensionByMonths(snap, scenario.years * 12)} zł
-              </div>
-            </div>
-          </div>
+        <div className="pt-4 border-gray-100 border-t text-center">
+          <p className="font-medium text-gray-600 text-sm">Nowa emerytura</p>
+          <p className={`text-4xl font-extrabold text-primary`}>
+            {Math.round(zusRetirementVariant)} zł
+          </p>
         </div>
       </div>
     );
@@ -204,14 +184,16 @@ const ZusScenarioView: React.FC = () => {
         ZUS: Dłuższa Praca
       </h1>
 
-      <p className="mb-8 text-base-content/70 text-xl text-center">
-        Bazowa emerytura (zgodnie z prognozą ZUS):{" "}
-        <span className="font-bold">{Math.round(currentPension)} zł/mc</span>
+      <p className="mb-8 text-gray-600 text-lg text-center">
+        Bazowa emerytura (prognoza ZUS):{" "}
+        <span className="font-bold text-primary">
+          {Math.round(snap.pension)} zł/mc
+        </span>
       </p>
 
-      <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3">
         {scenarios.map((scenario) => (
-          <ScenarioColumn key={scenario.years} scenario={scenario} />
+          <ScenarioCard key={scenario.years} scenario={scenario} />
         ))}
       </div>
 

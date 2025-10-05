@@ -1,6 +1,5 @@
 import { GENDERS } from "@/const/genders";
 import type { EmploymentPeriod, ZusRetirementConfig } from "@/sim";
-import { PeriodType } from "@/sim";
 import type { AppState } from "@/store/appState";
 import {
   calculateAvgMonthsAfterRetirement,
@@ -34,7 +33,9 @@ export const calculatePension = (appState: AppState) => {
   return Math.round(value);
 };
 
-const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
+const prepareZusConfig = (
+  appState: AppState
+): ZusRetirementConfig => {
   const {
     age,
     retirementAge,
@@ -160,10 +161,10 @@ export function bruteForceRequiredSalaryForTargetPension(
   return result;
 }
 
-export function calculatePensionByMonths(appState: AppState, months: number) {
+export function simPensionByStartingAfterYears(
+  appState: AppState,
+) {
   const zusConfig = prepareZusConfig(appState);
-
-  const result =
-    calculateZusRetirement(zusConfig).monthlyRetirementAmount(months);
+  const result = calculateZusRetirement(zusConfig).monthlyRetirementAmount(0);
   return Math.round(result);
 }

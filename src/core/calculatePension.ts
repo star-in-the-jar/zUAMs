@@ -9,8 +9,26 @@ import {
 } from "@/utils/configUtils";
 import { calculateZusRetirement } from "@/sim";
 import { MINIMAL_PENSION } from "@/const/pension";
+import { solve, type SolverConfig } from "@/sim/solver";
 
 export const calculatePension = (appState: AppState): string => {
+  const zusRetirementResult = calculateZusRetirement(
+    prepareZusConfig(appState)
+  );
+
+  let value = zusRetirementResult?.monthlyRetirementAmount(0) ?? 0;
+
+  if (
+    value < MINIMAL_PENSION &&
+    zusRetirementResult.isEligibleForMinimalRetirement
+  ) {
+    value = MINIMAL_PENSION;
+  }
+
+  return `${Math.round(value)} zł`;
+};
+
+const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
   const {
     age,
     retirementAge,
@@ -49,7 +67,7 @@ export const calculatePension = (appState: AppState): string => {
 
   const employmentPeriods: EmploymentPeriod[] = [employmentPeriodWithFn];
 
-  const zusConfig: ZusRetirementConfig = {
+  return {
     avgMonthsAliveAfterRetirement: calculateAvgMonthsAfterRetirement(
       retirementAge,
       normalizedGender
@@ -69,22 +87,41 @@ export const calculatePension = (appState: AppState): string => {
     yearlyValorizationCoef: () => 1.025,
     yearlyRetirementValorizationMul: () => 1.025,
   };
-
-  const zusRetirementResult = calculateZusRetirement(zusConfig);
-
-  let value = zusRetirementResult?.monthlyRetirementAmount(0) ?? 0;
-
-  if (
-    value < MINIMAL_PENSION &&
-    zusRetirementResult.isEligibleForMinimalRetirement
-  ) {
-    value = MINIMAL_PENSION;
-  }
-
-  return new Intl.NumberFormat("pl-PL", {
-    style: "currency",
-    currency: "PLN",
-  }).format(value);
 };
 
-const prepareZusConfig = () => {};
+/**
+ * Calculates the required gross monthly salary to achieve a target retirement (PLN/month) for UoP.
+ * Returns undefined if not UoP or not solvable.
+ */
+export function calculateRequiredSalaryForTargetPension(
+  appState: AppState
+): number | undefined {
+  // Only for UoP
+  if (appState.employmentType !== "UoP") return undefined;
+
+  const zusConfigBase = prepareZusConfig(appState);
+  const config: SolverConfig = {
+    maxIterations: 10000,
+    tolerance: 1e-3,
+    f: (monthlySalary) => {
+      const zusConfig = {
+        ...zusConfigBase,
+        employmentPeriods: [
+          {
+            ...zusConfigBase.employmentPeriods[0],
+            grossMonthlySalary: () => monthlySalary,
+          },
+        ],
+      };
+      const result = calculateZusRetirement(zusConfig);
+      return result.monthlyRetirementAmount(0) - appState.pension;
+    },
+    xMin: 1000,
+    xMax: 20000,
+  };
+  const result = solve(config);
+  if (Math.abs(result.fx) < 10 && result.x > 1000 && result.x < 20000) {
+    return result.x;
+  }
+  return undefined;
+}

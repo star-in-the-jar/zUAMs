@@ -3,15 +3,12 @@ import { useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { appState } from "@/store/appState";
 import { GENDERS } from "@/const/genders";
-
-// IMPORTUJEMY PEŁNĄ LOGIKĘ ZUS SIMULATION
 import {
   calculateZusRetirement,
   type ZusRetirementConfig,
   type UoPPeriod,
   PeriodType,
 } from "@/sim/zus";
-
 import {
   ClockIcon,
   BanknotesIcon,
@@ -29,13 +26,9 @@ const scenarios: Scenario[] = [
   { years: 8, label: "+ 8 lat" },
 ];
 
-// STAŁE DANE DO WYLICZEŃ:
-const START_WORKING_AGE = 25; // Wiek rozpoczęcia pracy (dla realistycznej symulacji)
-
-// Statystycznie ważone opóźnienie przejścia (na podstawie danych ZUS 2024)
+const START_WORKING_AGE = 25;
 const STATS_DELAY_YEARS = { MALE: 0.17, FEMALE: 0.29 };
 
-// UWAGA: Ta funkcja jest uproszczona, aby stworzyć bazowy okres zatrudnienia
 function getMockEmploymentPeriods(
   startYear: number,
   endYear: number,
@@ -54,31 +47,19 @@ function getMockEmploymentPeriods(
 const ZusScenarioView: React.FC = () => {
   const snap = useSnapshot(appState);
   const EXPECTED_PENSION = 6500;
-
-  // 1. ZMIANA: Pobranie bazowej emerytury bezpośrednio z appState.pension
   const basePensionFromState = Number(snap.pension) || 0;
   const hardcodedBasePension = 6500;
   const currentPension = basePensionFromState || hardcodedBasePension;
-
-  // 1. USTALENIE DANYCH BAZOWYCH
   const isMale = snap.gender === GENDERS.MALE || snap.gender === undefined;
-
-  // Obliczenie realistycznego roku rozpoczęcia pracy
   const startWorkingYear =
     new Date().getFullYear() - (snap.age - START_WORKING_AGE);
-
-  // ZASTOSOWANIE WAGI STATYSTYCZNEJ
   const statsDelay = isMale ? STATS_DELAY_YEARS.MALE : STATS_DELAY_YEARS.FEMALE;
   const statsRetirementAge = snap.retirementAge + statsDelay;
-
   const yearsToRetirement = statsRetirementAge - snap.age;
   const retirementYear =
     new Date().getFullYear() + Math.floor(yearsToRetirement);
-
-  // MOCK_AVG_MONTHS = 1 jest wartością placeholder, ponieważ zus.ts powinien sam obliczyć dalsze trwanie życia
   const MOCK_AVG_MONTHS = 1;
 
-  // Utworzenie bazowej konfiguracji dla STATYSTYCZNIE WAZONEGO wieku
   const baseConfig: ZusRetirementConfig = useMemo(
     () => ({
       employmentPeriods: getMockEmploymentPeriods(
@@ -93,7 +74,7 @@ const ZusScenarioView: React.FC = () => {
       avgMonthsAliveAfterRetirement: MOCK_AVG_MONTHS,
       monthsOfStudying: 0,
       monthsMaternityLeave: 0,
-      yearlyValorizationCoef: (year: number) => 1.005, // Zmniejszona dla urealnienia
+      yearlyValorizationCoef: (year: number) => 1.005,
       yearlyRetirementValorizationMul: (yearFromStart: number) => 1.005,
     }),
     [
@@ -105,12 +86,9 @@ const ZusScenarioView: React.FC = () => {
     ]
   );
 
-  // BAZOWY WYNIK Z SIMULACJI ZUS (kwota emerytury tylko z symulacji)
   const baseResultForSim = calculateZusRetirement(baseConfig);
   const currentPensionFromSim = baseResultForSim.monthlyRetirementAmount(0);
 
-  // 2. FUNKCJA DO OBLICZEŃ W SCENARIUSZU (+2, +4, +8 lat)
-  // ZMIANA: Ta funkcja zwraca CZYSTĄ KWOTĘ ZYSKU, A NIE BAZA + ZYSK
   const calculateScenarioPensionPureGain = (addedYears: number) => {
     const newRetirementAge = snap.retirementAge + addedYears;
     const newRetirementYear =
@@ -120,7 +98,6 @@ const ZusScenarioView: React.FC = () => {
       ...baseConfig,
       retirementYear: newRetirementYear,
       avgMonthsAliveAfterRetirement: MOCK_AVG_MONTHS,
-
       employmentPeriods: getMockEmploymentPeriods(
         startWorkingYear,
         newRetirementYear,
@@ -134,20 +111,19 @@ const ZusScenarioView: React.FC = () => {
     // Zysk to różnica: Nowa kwota z symulacji - Stara kwota z symulacji
     const zusGain = newPensionFromSim - currentPensionFromSim;
 
-    // WAŻNE: Funkcja zwraca tylko różnicę!
+    // Funkcja zwraca tylko różnicę
     return zusGain;
   };
 
-  // --- POMOCNICY WIZUALNI ---
-  function getRetirementYear(
+  const getRetirementYear = (
     age: number,
     retirementAge: number,
     addedYears: number
-  ) {
+  ) => {
     const currentYear = new Date().getFullYear();
     const yearsToRetirement = retirementAge + addedYears - age;
     return currentYear + Math.floor(yearsToRetirement);
-  }
+  };
 
   const getColorClass = (value: number) => {
     const roundedValue = Math.round(value);
@@ -156,14 +132,9 @@ const ZusScenarioView: React.FC = () => {
     return "text-base-content";
   };
 
-  // --- KOMPONENT KOLUMNY ---
   const ScenarioColumn: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
-    // POBIERAMY TYLKO CZYSTY ZYSK
     const zusGain = calculateScenarioPensionPureGain(scenario.years);
-
-    // OBLICZAMY KWOTĘ KOŃCOWĄ: Bazowa kwota (6500) + Zysk z symulacji
     const pensionAfterZus = currentPension + zusGain;
-
     const finalRetirementYear = getRetirementYear(
       snap.age,
       snap.retirementAge,
@@ -230,29 +201,39 @@ const ZusScenarioView: React.FC = () => {
         <span className="font-bold">{Math.round(currentPension)} zł/mc</span>
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-6">
         {scenarios.map((scenario) => (
           <ScenarioColumn key={scenario.years} scenario={scenario} />
         ))}
       </div>
 
-      <div className="alert alert-info mt-10 shadow-lg max-w-4xl mx-auto text-xl">
-        <span>
-          Czy wiedziałeś, że zostając na emeryturze powyżej 2 lat względem
-          ustawowego wieku emerytalnego, należysz do 3,7% społeczeństwa w
-          przypadku mężczyzn 8,5% w przypadku kobiet? (dane z r.2024). Względem
-          roku 2022 odnotowano w tej grupie spadek o kolejno: 0,1% dla mężczyzn
-          o 0,3% dla kobiet.
-        </span>
-      </div>
-      <div className="alert alert-info mt-10 shadow-lg max-w-4xl mx-auto text-xl">
-        <span>
-          Warto jednak zaznaczyć, że w przeciągu dwóch lat (2022-2024)
-          odnotowano spadek osób przechodzących na emeryturę równo w wieku
-          emerytalnym (o 3,9% w przypadku mężczyzn i 2,4% w przypadku kobiet).
-          Oznacza to, że coraz więcej osób przechodzi na emeryturę później w
-          celu uzyskania wyższych składek emerytalnych.
-        </span>
+      <div className="collapse collapse-arrow bg-primary/5 text-primary mt-6">
+        <input type="checkbox" className="collapse-toggle" />
+        <div className="collapse-title font-medium text-xl">
+          Dowiedz się więcej:
+        </div>
+        <div className="collapse-content">
+          <div className="alert alert-info mt-6 shadow-lg max-w-4xl mx-auto text-xl">
+            <span>
+              Czy wiedziałeś, że zostając na emeryturze powyżej 2 lat względem
+              ustawowego wieku emerytalnego, należysz do 3,7% społeczeństwa w
+              przypadku mężczyzn i 8,5% w przypadku kobiet? (dane z r.2024).
+              Względem roku 2022 odnotowano w tej grupie spadek o kolejno: 0,1%
+              dla mężczyzn i 0,3% dla kobiet.
+            </span>
+          </div>
+
+          <div className="alert alert-info mt-6 shadow-lg max-w-4xl mx-auto text-xl">
+            <span>
+              Warto jednak zaznaczyć, że w przeciągu dwóch lat (2022-2024)
+              odnotowano spadek osób przechodzących na emeryturę równo w wieku
+              emerytalnym (o 3,9% w przypadku mężczyzn i 2,4% w przypadku
+              kobiet). Oznacza to, że coraz więcej osób decyduje się na
+              późniejsze przejście na emeryturę w celu uzyskania wyższych
+              składek emerytalnych.
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

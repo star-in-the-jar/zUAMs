@@ -134,7 +134,7 @@ const ZusScenarioView: React.FC = () => {
   const ScenarioCard: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
     const zusRetirementVariant = simPensionByStartingAfterYears({
       ...snap,
-      retirementAge: snap.retirementAge + scenario.years
+      retirementAge: snap.retirementAge + scenario.years,
     });
     const finalRetirementYear = getRetirementYear(
       snap.age,
@@ -142,21 +142,17 @@ const ZusScenarioView: React.FC = () => {
       scenario.years
     );
 
-    const deltaRetirement = zusRetirementVariant - snap.pension
+    const deltaRetirement = zusRetirementVariant - snap.pension;
 
     return (
-      <div className="bg-white shadow-sm hover:shadow-lg p-6 border border-gray-200 rounded-2xl transition-all duration-200">
-        <div className="flex justify-center items-center gap-2 mb-3 font-bold text-primary text-xl">
+      <div className="bg-white p-4 shadow-sm hover:shadow-lg transition-all duration-200">
+        <div className="flex items-center justify-center gap-2 text-primary font-bold text-xl">
           <PresentationChartLineIcon className="w-6 h-6" />
           {scenario.label}
         </div>
 
-        <div className="mb-4 text-center">
-          <p className="text-gray-500 text-sm">Wydłużenie pracy</p>
-          <p className="font-semibold text-success text-2xl">
-            +{scenario.years} lata
-          </p>
-          <p className="text-gray-400 text-xs">
+        <div className="text-center mb-4">
+          <p className="text-xs text-gray-400">
             Emerytura od {finalRetirementYear} r.
           </p>
         </div>
@@ -168,8 +164,8 @@ const ZusScenarioView: React.FC = () => {
           </p>
         </div>
 
-        <div className="pt-4 border-gray-100 border-t text-center">
-          <p className="font-medium text-gray-600 text-sm">Nowa emerytura</p>
+        <div className="text-center border-t border-gray-100 pt-2">
+          <p className="text-sm text-gray-600 font-medium">Nowa emerytura</p>
           <p className={`text-4xl font-extrabold text-primary`}>
             {Math.round(zusRetirementVariant)} zł
           </p>
@@ -179,7 +175,7 @@ const ZusScenarioView: React.FC = () => {
   };
 
   return (
-    <div className="bg-white shadow-md p-8 rounded-2xl min-h-screen text-base-content">
+    <div className="bg-white text-base-content rounded-2xl p-4 shadow-md">
       <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-4xl text-center">
         ZUS: Dłuższa Praca
       </h1>
@@ -197,23 +193,15 @@ const ZusScenarioView: React.FC = () => {
         ))}
       </div>
 
-      <div className="shadow-lg mx-auto mt-10 max-w-4xl alert alert-info">
-        <span>
-          Czy wiedziałeś, że zostając na emeryturze powyżej 2 lat względem
-          ustawowego wieku emerytalnego, należysz do 3,7% społeczeństwa w
-          przypadku mężczyzn 8,5% w przypadku kobiet? (dane z r.2024). Względem
-          roku 2022 odnotowano w tej grupie spadek o kolejno: 0,1% dla mężczyzn
-          o 0,3% dla kobiet.
-        </span>
-      </div>
-      <div className="shadow-lg mx-auto mt-6 max-w-4xl alert alert-info">
-        <span>
-          Warto jednak zaznaczyć, że w przeciągu dwóch lat (2022-2024)
-          odnotowano spadek osób przechodzących na emeryturę równo w wieku
-          emerytalnym (o 3,9% w przypadku mężczyzn i 2,4% w przypadku kobiet).
-          Oznacza to, że coraz więcej osób przechodzi na emeryturę później w
-          celu uzyskania wyższych składek emerytalnych.
-        </span>
+      <div className="mt-10 space-y-4 max-w-4xl mx-auto">
+        <div className="alert alert-info flex items-start gap-3p-4 rounded-xl shadow-sm">
+          <InformationCircleIcon className="min-w-6 w-6 h-6" />
+          <p>
+            Tylko 3,7% mężczyzn i 8,5% kobiet pracuje dłużej niż 2 lata po
+            osiągnięciu wieku emerytalnego (dane z 2024 r.). Względem 2022 r. to
+            spadek o 0,1% dla mężczyzn i 0,3% dla kobiet.
+          </p>
+        </div>
       </div>
     </div>
   );

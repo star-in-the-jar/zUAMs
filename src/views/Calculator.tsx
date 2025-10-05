@@ -53,9 +53,9 @@ const Result: React.FC = () => {
         </div>
 
         <form className="mb-6">
-          <div className="flex flex-col gap-y-4 w-full">
+          <div className="flex flex-col w-full">
             {/* 1. WIĘCEJ OPCJI (URLOP/OSZCZĘDNOŚCI) */}
-            <div className="collapse collapse-arrow bg-primary/5 text-primary">
+            <div className="collapse collapse-arrow bg-primary/5 text-primary mb-4">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
                 Więcej opcji
@@ -69,7 +69,7 @@ const Result: React.FC = () => {
             </div>
 
             {/* 2. SCENARIUSZE ZUS */}
-            <div className="collapse collapse-arrow bg-primary/5 mt-6 text-primary">
+            <div className="collapse collapse-arrow bg-primary/5 border-b border-b-primary/10 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
                 Scenariusze ZUS
@@ -80,7 +80,7 @@ const Result: React.FC = () => {
             </div>
 
             {/* 3. SCENARIUSZE OSZCZĘDNOŚCI (POPRAWIONY BLOK) */}
-            <div className="collapse collapse-arrow bg-primary/5 mt-6 text-primary">
+            <div className="collapse collapse-arrow bg-primary/5 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
                 Scenariusze Oszczędności
@@ -96,17 +96,6 @@ const Result: React.FC = () => {
           traktować podane wartości jako siłę nabywczą na dzień dzisiejszy.
         </div>
         <span></span>
-
-        {/* Dodajemy nowy komponent w rozwijanej sekcji */}
-        <div className="collapse collapse-arrow bg-primary/5 mt-6 text-primary">
-          <input type="checkbox" className="collapse-toggle" />
-          <div className="collapse-title font-medium text-xl">
-            Scenariusze ZUS
-          </div>
-          <div className="collapse-content">
-            <ZusScenarioView />
-          </div>
-        </div>
       </div>
 
       <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-base -translate-x-1/2">

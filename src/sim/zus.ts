@@ -63,6 +63,11 @@ export type ZusRetirementConfig = {
     yearlyValorizationCoef: (year: number) => number
     /** Yearly valorization multiplier for retirement payments. Default: fixed 2.5% (1.025) */
     yearlyRetirementValorizationMul: (yearFromStart: number) => number
+    /** Additional savings - counted towards retirement but no contributions */
+    additionalSavings: number
+    yearlyAdditionalSavingsValorizationMul: (yearFromStart: number) => number
+    collectedZusBenefits: number
+    averageSickDays: boolean
 }
 
 /**

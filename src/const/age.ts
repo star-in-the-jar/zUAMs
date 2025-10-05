@@ -11,6 +11,6 @@ export const MEDIAN_LIVE_AGE = {
 } as const;
 
 export const MIN_AGE = 16;
-export const MAX_AGE = 120;
+export const MAX_AGE = 91;
 
 export const MIN_AGE_TO_WORK = 16;

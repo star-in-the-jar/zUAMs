@@ -1,4 +1,4 @@
-import { RETIREMENT_AGE, MEDIAN_LIVE_AGE } from "@/const/age";
+import { RETIREMENT_AGE } from "@/const/age";
 import type { Gender } from "@/const/genders";
 import { PeriodType } from "@/sim";
 

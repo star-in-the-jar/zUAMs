@@ -38,6 +38,9 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
     monthlyGrossSalary,
     workSinceAge,
     maternityLeaves,
+    additionalSavings,
+    collectedZusBenefits,
+    averageSickDays,
   } = appState;
   const normalizedGender = gender ?? GENDERS.MALE;
 
@@ -86,6 +89,10 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
     monthsOfStudying: 0,
     yearlyValorizationCoef: () => 1.01,
     yearlyRetirementValorizationMul: () => 1.008,
+    yearlyAdditionalSavingsValorizationMul: () => 1.02,
+    additionalSavings: additionalSavings,
+    collectedZusBenefits: collectedZusBenefits,
+    averageSickDays: averageSickDays,
   };
 };
 

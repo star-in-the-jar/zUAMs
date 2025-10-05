@@ -28,15 +28,52 @@ const handlePensionChange = (
 
 const SectionAgeAndRetirement: React.FC = () => {
   const [showPensionWarning, setShowPensionWarning] = useState(false);
+  const [tempAgeValue, setTempAgeValue] = useState<string>("");
+  const [showAgeError, setShowAgeError] = useState(false);
   const snap = useSnapshot(appState);
 
   const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
+    setTempAgeValue(val);
+
+    // Check if the value is invalid and show error
     const num = Number(val);
-    if (!isNaN(num) && num > MIN_AGE && num < MAX_AGE) {
+    const isValid = !isNaN(num) && num >= MIN_AGE && num <= MAX_AGE;
+    setShowAgeError(!isValid && val !== "");
+
+    // Only update global state if the value is a valid number within range
+    if (isValid) {
       setAndMarkAsChanged("age", num);
       setAndMarkAsChanged("retirementAge", Math.max(snap.retirementAge, num));
     }
+  };
+
+  const handleAgeBlur = () => {
+    const num = Number(tempAgeValue);
+
+    // Clear error state on blur
+    setShowAgeError(false);
+
+    // On blur, validate and set to closest valid value if needed
+    if (isNaN(num) || num < MIN_AGE) {
+      setAndMarkAsChanged("age", MIN_AGE);
+      setAndMarkAsChanged("retirementAge", Math.max(snap.retirementAge, MIN_AGE));
+      setTempAgeValue(MIN_AGE.toString());
+    } else if (num > MAX_AGE) {
+      setAndMarkAsChanged("age", MAX_AGE);
+      setAndMarkAsChanged("retirementAge", Math.max(snap.retirementAge, MAX_AGE));
+      setTempAgeValue(MAX_AGE.toString());
+    } else {
+      // Valid value, ensure it's set
+      setAndMarkAsChanged("age", num);
+      setAndMarkAsChanged("retirementAge", Math.max(snap.retirementAge, num));
+      setTempAgeValue(num.toString());
+    }
+  };
+
+  const handleAgeFocus = () => {
+    // When focusing, use the current global state value
+    setTempAgeValue(snap.age.toString());
   };
 
   return (
@@ -48,12 +85,12 @@ const SectionAgeAndRetirement: React.FC = () => {
               <span className="font-medium label-text">
                 Jaką emeryturę miesięczną chciałbyś mieć?
               </span>
-              <div className="input w-full">
+              <div className="w-full input">
                 <input
                   value={snap.pension}
                   className="grow"
                   type="number"
-                  onChange={handlePensionChange}
+                  onChange={(e) => handlePensionChange(e, setShowPensionWarning)}
                 />
                 zł
               </div>
@@ -69,7 +106,7 @@ const SectionAgeAndRetirement: React.FC = () => {
                   href={REAL_PENSION_ARTICLE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-red-700"
+                  className="hover:text-red-700 underline"
                 >
                   Więcej informacji
                 </a>
@@ -80,7 +117,7 @@ const SectionAgeAndRetirement: React.FC = () => {
           <div className="form-control">
             <span className="font-medium label-text">Jesteś</span>
             <GenderButtons />
-            <span className="text-sm text-base-content/70 font-medium">
+            <span className="font-medium text-sm text-base-content/70">
               Mężczyźni mogą prześć na emeryturę w wieku 65 lat
               <br />
               Kobiety w wieku 60 lat
@@ -92,15 +129,26 @@ const SectionAgeAndRetirement: React.FC = () => {
                 W jakim wieku jesteś?
               </span>
             </label>
-            <div className="input w-full">
+            <div className={`w-full input ${showAgeError ? 'input-error' : ''}`}>
               <input
-                value={snap.age}
+                value={tempAgeValue || snap.age}
                 className="grow"
                 type="number"
                 onChange={handleAgeChange}
+                onBlur={handleAgeBlur}
+                onFocus={handleAgeFocus}
+                min={MIN_AGE}
+                max={MAX_AGE}
               />
               lat
             </div>
+            {showAgeError && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  Wiek musi być między {MIN_AGE} a {MAX_AGE} lat
+                </span>
+              </label>
+            )}
           </div>
         </div>
       </div>

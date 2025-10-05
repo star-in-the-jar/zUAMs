@@ -1,8 +1,7 @@
 import React from "react";
 import { useSnapshot } from "valtio";
 import { appState, setAndMarkAsChanged } from "@/store/appState";
-import GenderButtons from "@/components/GenderButtons";
-import { MIN_AGE, MAX_AGE, MIN_AGE_TO_WORK } from "@/const/age";
+import { MIN_AGE, MAX_AGE } from "@/const/age";
 import UnchangedField from "./UnchangedField";
 
 const SectionBasicData: React.FC = () => {
@@ -150,8 +149,8 @@ const SectionBasicData: React.FC = () => {
             </div>
           </UnchangedField>
 
-          <div className="label pt-1 -mt-3">
-            <span className="label-text-alt text-base-content/70 text-xs">
+          <div className="-mt-3 pt-1 label">
+            <span className="label-text-alt text-xs text-base-content/70">
               Twój obecny staż pracy to {yearsWorked} {formatYears(yearsWorked)}
               . Minimalny wymagany staż (do minimalnej emerytury) to {minStaz}{" "}
               lat. Osiągniesz go w wieku {minStazAchieveAge} lat.

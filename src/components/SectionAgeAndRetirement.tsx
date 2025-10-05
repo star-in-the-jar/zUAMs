@@ -25,35 +25,32 @@ const SectionAgeAndRetirement: React.FC = () => {
   const snap = useSnapshot(appState);
   return (
     <div className="bg-white text-base-content card">
-      <div className="card-body">
+      <div>
         <div className="flex flex-col gap-y-4">
           <div className="form-control">
-            <label className="label">
+            <label>
               <span className="font-medium label-text">
                 Jaką emeryturę miesięczną chciałbyś mieć?
               </span>
+              <div className="input w-full">
+                <input
+                  value={snap.pension}
+                  className="grow"
+                  type="number"
+                  onChange={handlePensionChange}
+                />
+                zł
+              </div>
             </label>
-            <div className="input w-full">
-              <input
-                value={snap.pension}
-                className="grow"
-                type="number"
-                onChange={handlePensionChange}
-              />
-              zł
-            </div>
           </div>
           <div className="form-control">
-            <label className="label">
-              <span className="font-medium label-text">Jesteś</span>
-            </label>
+            <span className="font-medium label-text">Jesteś</span>
             <GenderButtons />
-            <div className="label">
-              <span className="label-text-alt">
-                Mężczyźni mogą prześć na emeryturę w wieku 65 lat, kobiety w
-                wieku 60 lat
-              </span>
-            </div>
+            <span className="text-sm text-base-content/70 font-medium">
+              Mężczyźni mogą prześć na emeryturę w wieku 65 lat
+              <br />
+              Kobiety w wieku 60 lat
+            </span>
           </div>
           <div className="form-control">
             <label className="label">

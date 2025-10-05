@@ -81,7 +81,7 @@ const SavingsScenarioView: React.FC = () => {
 
     return (
       <div className="bg-white p-4 shadow-sm hover:shadow-lg transition-all duration-200">
-        <div className="flex items-center justify-center gap-2 text-primary font-bold text-xl">
+        <div className="flex items-center justify-center gap-2 text-primary font-bold text-lg lg:text-xl">
           <TrophyIcon className="w-6 h-6" />
           {scenario.label}
         </div>
@@ -124,7 +124,7 @@ const SavingsScenarioView: React.FC = () => {
 
   return (
     <div className="bg-white text-base-content rounded-2xl p-4 shadow-md">
-      <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-4xl text-center">
+      <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-xl lg:text-4xl text-center">
         Własne Oszczędności
       </h1>
 
@@ -151,7 +151,7 @@ const SavingsScenarioView: React.FC = () => {
         </label>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-2 lg:gap-0">
         {scenarios.map((scenario) => (
           <ScenarioCard key={scenario.years} scenario={scenario} />
         ))}

@@ -69,7 +69,6 @@ const Result: React.FC = () => {
                 </div>
               </div>
             </div>
-
             {/* 2. SCENARIUSZE ZUS */}
             <div className="collapse collapse-arrow bg-primary/5 text-primary">
               <input type="checkbox" className="collapse-toggle" />
@@ -80,8 +79,6 @@ const Result: React.FC = () => {
                 <ZusScenarioView />
               </div>
             </div>
-
-            {/* 3. SCENARIUSZE OSZCZĘDNOŚCI (POPRAWIONY BLOK)
             <div className="collapse collapse-arrow bg-primary/5 text-primary">
               <input type="checkbox" className="collapse-toggle" />
               <div className="collapse-title font-medium text-xl">
@@ -90,7 +87,7 @@ const Result: React.FC = () => {
               <div className="collapse-content">
                 <SavingsScenarioView />
               </div>
-            </div> */}
+            </div>
           </div>
         </form>
         <div className="mb-6 text-xs text-base-content/70">

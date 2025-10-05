@@ -75,7 +75,12 @@ const ZusScenarioView: React.FC = () => {
       avgMonthsAliveAfterRetirement: MOCK_AVG_MONTHS,
       monthsOfStudying: 0,
       yearlyValorizationCoef: (year: number) => 1.005, // Zmniejszona dla urealnienia
-      yearlyRetirementValorizationMul: (yearFromStart: number) => 1.005,
+      yearlyRetirementValorizationMul: () => 1.005,
+      additionalSavings: 0,
+      yearlyAdditionalSavingsValorizationMul: () => 1.02,
+      collectedZusBenefits: 0,
+      averageSickDays: false,
+      monthsMaternityLeave: 0,
     }),
     [
       snap.age,
@@ -194,7 +199,7 @@ const ZusScenarioView: React.FC = () => {
   };
 
   return (
-    <div className="bg-white text-base-content rounded-2xl min-h-screen p-8 shadow-md">
+    <div className="bg-white shadow-md p-8 rounded-2xl min-h-screen text-base-content">
       <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-4xl text-center">
         ZUS: Dłuższa Praca
       </h1>
@@ -210,7 +215,7 @@ const ZusScenarioView: React.FC = () => {
         ))}
       </div>
 
-      <div className="alert alert-info shadow-lg mx-auto mt-10 max-w-4xl">
+      <div className="shadow-lg mx-auto mt-10 max-w-4xl alert alert-info">
         <span>
           Czy wiedziałeś, że zostając na emeryturze powyżej 2 lat względem
           ustawowego wieku emerytalnego, należysz do 3,7% społeczeństwa w
@@ -219,7 +224,7 @@ const ZusScenarioView: React.FC = () => {
           o 0,3% dla kobiet.
         </span>
       </div>
-      <div className="alert alert-info shadow-lg mx-auto mt-6 max-w-4xl">
+      <div className="shadow-lg mx-auto mt-6 max-w-4xl alert alert-info">
         <span>
           Warto jednak zaznaczyć, że w przeciągu dwóch lat (2022-2024)
           odnotowano spadek osób przechodzących na emeryturę równo w wieku

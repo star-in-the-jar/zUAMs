@@ -38,8 +38,6 @@ const Result: React.FC = () => {
     }
   }, []);
 
-  appState.pension = calculatePension(snap);
-
   return (
     <div className="flex flex-col items-center pb-20">
       <div className="w-full max-w-2xl">
@@ -113,7 +111,7 @@ const Result: React.FC = () => {
 
       <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-base -translate-x-1/2">
         Otrzymasz emeryturę w wysokości&nbsp;
-        <span className="font-bold text-primary">{appState.pension} zł</span>
+        <span className="font-bold text-primary">{calculatePension(snap)}</span>
         &nbsp;miesięcznie (netto)
       </div>
     </div>

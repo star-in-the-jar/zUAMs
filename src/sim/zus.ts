@@ -207,7 +207,7 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
     const employmentMonths = calculateContributionMonths(config.employmentPeriods, config.simStartYear)
     const cappedStudyingMonths = Math.min(config.monthsOfStudying, 8 * 12) // Cap at 8 years
     const totalMonthsContributed = employmentMonths + cappedStudyingMonths + config.monthsMaternityLeave
-    // const totalAdditionalSavingsContributed = config.additionalSavings * config.yearlyAdditionalSavingsValorizationMul(totalMonthsContributed)
+    const totalAdditionalSavingsContributed = config.additionalSavings * config.yearlyAdditionalSavingsValorizationMul(totalMonthsContributed)
     const totalCollectedZusBenefitsContributed = config.collectedZusBenefits * config.yearlyRetirementValorizationMul(totalMonthsContributed)
     const totalMaternityLeaveContributed = config.monthsMaternityLeave * config.yearlyRetirementValorizationMul(totalMonthsContributed)
 
@@ -220,7 +220,8 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
 
     // Step 3: Calculate base monthly retirement
     const totalZusAccountBalanceAtTimeOfRetirementReduced = totalZusAccountBalanceAtTimeOfRetirement - (totalMaternityLeaveContributed * 1000)
-    const baseMonthlyRetirement = totalZusAccountBalanceAtTimeOfRetirementReduced / config.avgMonthsAliveAfterRetirement
+    const totalZusAccountBalanceAtTimeOfRetirementReducedWithAdditionalSavings = totalZusAccountBalanceAtTimeOfRetirementReduced + totalAdditionalSavingsContributed
+    const baseMonthlyRetirement = totalZusAccountBalanceAtTimeOfRetirementReducedWithAdditionalSavings / config.avgMonthsAliveAfterRetirement
 
     // Step 4: Create function that returns retirement amount for any month
     const monthlyRetirementAmount = (monthsAfterRetirementStart: number): number => {

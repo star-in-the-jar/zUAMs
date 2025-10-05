@@ -235,7 +235,8 @@ describe('ZUS Retirement Calculator', () => {
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 0,
             yearlyValorizationCoef: () => 1.0,
-            yearlyRetirementValorizationMul: () => 1.0
+            yearlyRetirementValorizationMul: () => 1.0,
+            yearlyAdditionalSavingsValorizationMul: () => 1.0
         }
 
         const result = calculateZusRetirement(config)

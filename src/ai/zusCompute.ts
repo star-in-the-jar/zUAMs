@@ -108,7 +108,7 @@ export function calculateZusRetirementSimple(input: ZusCalculationInput): ZusCal
     yearlyValorizationCoef: () => input.yearlyValorization, // Convert to function
     yearlyRetirementValorizationMul: () => 1.005, //s Convert to function
     additionalSavings: 0, // Not used in simple calculation
-    yearlyAdditionalSavingsValorizationMul: () => 1.005, // Default valorization
+    yearlyAdditionalSavingsValorizationMul: () => 1.01, // Default valorization
     collectedZusBenefits: 0, // Not used in simple calculation
     monthsMaternityLeave: 0,
     averageSickDays: false // Not used in simple calculation

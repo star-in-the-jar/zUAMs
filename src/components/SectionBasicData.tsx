@@ -1,10 +1,13 @@
 import React from "react";
 import { useSnapshot } from "valtio";
 import { appState, setAndMarkAsChanged } from "@/store/appState";
+import GenderButtons from "@/components/GenderButtons";
+import { MIN_AGE, MAX_AGE, MIN_AGE_TO_WORK } from "@/const/age";
 import UnchangedField from "./UnchangedField";
-import { MAX_AGE, MIN_AGE, MIN_AGE_TO_WORK } from "@/const/age";
 
 const SectionBasicData: React.FC = () => {
+  const snap = useSnapshot(appState);
+
   const handleEmploymentTypeChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -28,7 +31,7 @@ const SectionBasicData: React.FC = () => {
     const val = e.target.value;
     const num = Number(val);
     if (!isNaN(num) && num > MIN_AGE && num < MAX_AGE) {
-      appState.retirementAge = num;
+      setAndMarkAsChanged("retirementAge", num);
       appState.age = Math.min(appState.age, num);
     }
   };
@@ -43,7 +46,12 @@ const SectionBasicData: React.FC = () => {
     }
   };
 
-  const snap = useSnapshot(appState);
+  // Logika obliczeń
+  const yearsWorked = Math.max(0, snap.age - snap.workSinceAge);
+  const minStaz = snap.gender === "FEMALE" ? 20 : 25;
+  const minStazAchieveAge = snap.workSinceAge + minStaz;
+  const formatYears = (count: number) => (count === 1 ? "rok" : "lat");
+
   return (
     <div className="bg-white text-base-content card">
       <div className="p-0 card-body">
@@ -101,6 +109,7 @@ const SectionBasicData: React.FC = () => {
               </div>
             </div>
           </UnchangedField>
+
           <UnchangedField field="monthlyGrossSalary">
             <div className="flex flex-col gap-y-1 w-full">
               <label>
@@ -120,11 +129,12 @@ const SectionBasicData: React.FC = () => {
               </label>
             </div>
           </UnchangedField>
+
           <UnchangedField field="workSinceAge">
             <div className="flex flex-col gap-y-1 w-full">
               <label>
                 <span className="font-medium label-text">
-                  W jakim wieku zacząłeś pracować?
+                  W jakim wieku zacząłeś/zaczniesz pracować?
                 </span>
                 <div className="w-full input">
                   <input
@@ -139,6 +149,14 @@ const SectionBasicData: React.FC = () => {
               </label>
             </div>
           </UnchangedField>
+
+          <div className="label pt-1 -mt-3">
+            <span className="label-text-alt text-base-content/70 text-xs">
+              Twój obecny staż pracy to {yearsWorked} {formatYears(yearsWorked)}
+              . Minimalny wymagany staż (do minimalnej emerytury) to {minStaz}{" "}
+              lat. Osiągniesz go w wieku {minStazAchieveAge} lat.
+            </span>
+          </div>
         </div>
       </div>
     </div>

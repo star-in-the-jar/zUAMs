@@ -1,18 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSnapshot } from "valtio";
 import { appState, setAndMarkAsChanged } from "@/store/appState";
 import GenderButtons from "@/components/GenderButtons";
 import { MIN_AGE, MAX_AGE } from "@/const/age";
 
-const handlePensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+const MAX_PENSION_LIMIT = 55000;
+const REAL_PENSION_ARTICLE_URL =
+  "https://www.rynekzdrowia.pl/Finanse-i-zarzadzanie/Przeszedl-na-emeryture-w-wieku-86-lat-Przelew-co-miesiac-zwala-z-nog,274208,1.html";
+
+const handlePensionChange = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setShowWarning: React.Dispatch<React.SetStateAction<boolean>>
+) => {
   const val = e.target.value;
   const num = Number(val);
+
   if (!isNaN(num)) {
-    appState.pension = num;
+    if (num > MAX_PENSION_LIMIT) {
+      appState.pension = MAX_PENSION_LIMIT;
+      setShowWarning(true);
+    } else {
+      appState.pension = num;
+      setShowWarning(false);
+    }
   }
 };
 
 const SectionAgeAndRetirement: React.FC = () => {
+  const [showPensionWarning, setShowPensionWarning] = useState(false);
+  const snap = useSnapshot(appState);
+
   const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     const num = Number(val);
@@ -22,7 +39,6 @@ const SectionAgeAndRetirement: React.FC = () => {
     }
   };
 
-  const snap = useSnapshot(appState);
   return (
     <div className="bg-white text-base-content card">
       <div>
@@ -43,6 +59,24 @@ const SectionAgeAndRetirement: React.FC = () => {
               </div>
             </label>
           </div>
+
+          {showPensionWarning && (
+            <div className="mt-2 text-error">
+              <span className="text-red-600 text-xs">
+                Maksymalne wypłacane świadczenie stan na sierpień 2025 to 51400
+                zł. &rarr;{" "}
+                <a
+                  href={REAL_PENSION_ARTICLE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-red-700"
+                >
+                  Więcej informacji
+                </a>
+              </span>
+            </div>
+          )}
+
           <div className="form-control">
             <span className="font-medium label-text">Jesteś</span>
             <GenderButtons />

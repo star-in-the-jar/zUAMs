@@ -17,6 +17,10 @@ export type AppState = {
   additionalSavings: number;
   currentMonthlySalary: number;
   collectedZusBenefits: number;
+  // JDG (self-employment) options
+  jdgStartYear?: number;
+  yearsOnJdg?: number;
+  monthlyJdgZusContribution?: number;
 };
 
 export const wasAppStateFieldChanged: Record<keyof AppState, boolean> = {
@@ -35,6 +39,10 @@ export const wasAppStateFieldChanged: Record<keyof AppState, boolean> = {
   additionalSavings: false,
   currentMonthlySalary: false,
   collectedZusBenefits: false,
+  // JDG options
+  jdgStartYear: false,
+  yearsOnJdg: false,
+  monthlyJdgZusContribution: false,
 };
 
 // Global app state for pension and related values
@@ -54,6 +62,10 @@ export const appState = proxy<AppState>({
   additionalSavings: 0,
   currentMonthlySalary: 0,
   collectedZusBenefits: 0,
+  // JDG defaults
+  jdgStartYear: undefined,
+  yearsOnJdg: undefined,
+  monthlyJdgZusContribution: undefined,
 });
 
 export const setAndMarkAsChanged = <K extends keyof AppState>(

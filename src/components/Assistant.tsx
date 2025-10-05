@@ -35,6 +35,10 @@ const Assistant: React.FC<{ chatName: string }> = ({ chatName }) => {
     snap.additionalSavings > 0 ? ` Odkłada dodatkowo ${snap.additionalSavings} zł w II i III filarze.` : ''
   }${
     snap.collectedZusBenefits > 0 ? ` Suma już zebranych świadczeń w ZUS wynosi ${snap.collectedZusBenefits} zł.` : ''
+  }${
+    snap.jdgStartYear && snap.yearsOnJdg && snap.monthlyJdgZusContribution 
+      ? ` Prowadzi JDG od roku ${snap.jdgStartYear} przez ${snap.yearsOnJdg} lat, płacąc ${snap.monthlyJdgZusContribution} zł składki ZUS miesięcznie.`
+      : ''
   }`.trim().replace(/\s+/g, ' ');
 
   const [messages, setMessages] = useState<Message[]>([
@@ -87,11 +91,19 @@ Zamiast **pogrubienia** używaj WIELKICH LITER dla podkreślenia. Odpowiadaj kr�
 
 WYKONYWANIE OBLICZEŃ:
 Gdy użytkownik pyta o emeryturę - dopytaj o:
-1. To ile zarabia na uop (brutto)
-2. W jakim wieku chce przejśc na emeryture
+1. To ile zarabia na UoP (brutto miesięcznie)
+2. W jakim wieku chce przejść na emeryturę
 3. Ile ma lat
 4. Ile lat już pracuje
 5. Jakiej jest płci
+6. Czy prowadzi, prowadził lub będzie prowadził JDG.
+DODATKOWE INFORMACJE O JDG:
+Jeśli użytkownik prowadzi lub planuje JDG (jednoosobową działalność gospodarczą), zapytaj o:
+- Od którego roku prowadzi/będzie prowadzić JDG
+- Ile lat będzie prowadzić JDG
+- Ile składki ZUS płaci/będzie płacić miesięcznie (minimum 1646,47 zł)
+
+UWAGA: JDG uwzględniasz w obliczeniach TYLKO gdy użytkownik poda WSZYSTKIE trzy informacje o JDG.
 
 Nie licz emerytury samodzielnie, jest do tego specjalna akcja, która zrobi to za Ciebie.
 `;

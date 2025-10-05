@@ -86,7 +86,7 @@ const SectionAgeAndRetirement: React.FC = () => {
             </div>
           )}
 
-          <div className="mt-2 text-xs">
+          <div className="text-xs">
             <span className="text-xs text-base-content/70">
               Minimalna emerytura to {MIN_PENSION_LIMIT} zł, a maksymalna
               dopuszczana to {MAX_PENSION_LIMIT} zł. Ciekawostka: najwięcej

@@ -111,6 +111,7 @@ export function calculateZusRetirementSimple(input: ZusCalculationInput): ZusCal
     additionalSavings: 0, // Not used in simple calculation
     yearlyAdditionalSavingsValorizationMul: () => 1.025, // Default valorization
     collectedZusBenefits: 0, // Not used in simple calculation
+    monthsMaternityLeave: 0,
     averageSickDays: false // Not used in simple calculation
   }
 

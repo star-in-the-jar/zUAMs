@@ -207,12 +207,12 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
     const employmentMonths = calculateContributionMonths(config.employmentPeriods, config.simStartYear)
     const cappedStudyingMonths = Math.min(config.monthsOfStudying, 8 * 12) // Cap at 8 years
     const totalMonthsContributed = employmentMonths + cappedStudyingMonths + config.monthsMaternityLeave
-    const totalAdditionalSavingsContributed = config.additionalSavings * config.yearlyAdditionalSavingsValorizationMul(totalMonthsContributed)
+    // const totalAdditionalSavingsContributed = config.additionalSavings * config.yearlyAdditionalSavingsValorizationMul(totalMonthsContributed)
     const totalCollectedZusBenefitsContributed = config.collectedZusBenefits * config.yearlyRetirementValorizationMul(totalMonthsContributed)
     const totalMaternityLeaveContributed = config.monthsMaternityLeave * config.yearlyRetirementValorizationMul(totalMonthsContributed)
 
     // Step 1: Calculate account balance (only from employment, not studying)
-    const totalZusAccountBalanceAtTimeOfRetirement = simulateZusAccumulation(config) + totalAdditionalSavingsContributed + totalCollectedZusBenefitsContributed
+    const totalZusAccountBalanceAtTimeOfRetirement = simulateZusAccumulation(config) + totalCollectedZusBenefitsContributed
 
     // Step 2: Calculate eligibility for minimal retirement
     const requiredMonthsForMinimalRetirement = config.gender === GENDERS.MALE ? 25 * 12 : 20 * 12 // 25 years for men, 20 years for women

@@ -60,7 +60,7 @@ const SectionAgeAndRetirement: React.FC = () => {
               <span className="font-medium label-text">
                 Jaką emeryturę miesięczną chciałbyś mieć?
               </span>
-              <div className="input w-full">
+              <div className="w-full input">
                 <input
                   value={snap.pension}
                   className="grow"
@@ -87,7 +87,7 @@ const SectionAgeAndRetirement: React.FC = () => {
           )}
 
           <div className="mt-2 text-xs">
-            <span className="text-base-content/70">
+            <span className="text-xs text-base-content/70">
               Minimalna emerytura to {MIN_PENSION_LIMIT} zł, a maksymalna
               dopuszczana to {MAX_PENSION_LIMIT} zł. Ciekawostka: najwięcej
               wypłacane świadczenie z ZUS wynosiło 51,400 zł. &rarr;{" "}
@@ -95,7 +95,7 @@ const SectionAgeAndRetirement: React.FC = () => {
                 href={REAL_PENSION_ARTICLE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-blue-600"
+                className="hover:text-blue-600 underline"
               >
                 Więcej informacji
               </a>
@@ -103,22 +103,20 @@ const SectionAgeAndRetirement: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <span className="font-medium label-text">Jesteś</span>
+            <span className="font-medium label-text">Kim jesteś?</span>
             <GenderButtons />
-            <span className="text-sm text-base-content/70 font-medium">
-              Mężczyźni mogą przejść na emeryturę w wieku 65 lat
-              <br />
-              Kobiety w wieku 60 lat
+            <span className="text-xs text-base-content/70">
+              Mężczyźni mogą przejść na emeryturę w wieku 65 lat, kobiety w wieku 60 lat
             </span>
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label>
               <span className="font-medium label-text">
                 W jakim wieku jesteś?
               </span>
             </label>
-            <div className="input w-full">
+            <div className="w-full input">
               <input
                 value={snap.age}
                 className="grow"

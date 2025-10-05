@@ -11,6 +11,7 @@ import { calculateZusRetirement } from "@/sim";
 import { MINIMAL_PENSION } from "@/const/pension";
 import { solve, type SolverConfig } from "@/sim/solver";
 
+
 export const calculatePension = (appState: AppState): string => {
   const zusRetirementResult = calculateZusRetirement(
     prepareZusConfig(appState)
@@ -70,7 +71,6 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
   return {
     avgMonthsAliveAfterRetirement: calculateAvgMonthsAfterRetirement(
       retirementAge,
-      normalizedGender
     ),
 
     employmentPeriods,
@@ -84,8 +84,8 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
     retirementMonth: 12,
     monthsMaternityLeave: maternityLeaves * 5,
     monthsOfStudying: 0,
-    yearlyValorizationCoef: () => 1.025,
-    yearlyRetirementValorizationMul: () => 1.025,
+    yearlyValorizationCoef: () => 1.01,
+    yearlyRetirementValorizationMul: () => 1.008,
   };
 };
 

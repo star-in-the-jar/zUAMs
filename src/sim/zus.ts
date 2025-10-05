@@ -101,25 +101,25 @@ function isMonthInPeriod(yearMonth: YearMonth, period: EmploymentPeriod): boolea
 
 function calculateContributionMonths(periods: EmploymentPeriod[], baseYear: number): number {
     if (periods.length === 0) return 0
-    
+
     // Convert periods to month ranges and merge overlapping ones
     const monthRanges: Array<{ start: number, end: number }> = []
-    
+
     for (const period of periods) {
         const start = yearMonthToMonthIndex(period.from, baseYear)
         const end = yearMonthToMonthIndex(period.to, baseYear)
         monthRanges.push({ start, end })
     }
-    
+
     // Sort by start month
     monthRanges.sort((a, b) => a.start - b.start)
-    
+
     // Merge overlapping ranges
     const merged: Array<{ start: number, end: number }> = []
     if (monthRanges.length === 0) return 0
-    
+
     let current = monthRanges[0]
-    
+
     for (let i = 1; i < monthRanges.length; i++) {
         const next = monthRanges[i]
         if (next.start <= current.end + 1) {
@@ -132,7 +132,7 @@ function calculateContributionMonths(periods: EmploymentPeriod[], baseYear: numb
         }
     }
     merged.push(current)
-    
+
     // Count total months
     let totalMonths = 0
     for (const range of merged) {
@@ -146,22 +146,22 @@ function calculateContributionMonths(periods: EmploymentPeriod[], baseYear: numb
  */
 function simulateZusAccumulation(config: ZusRetirementConfig): number {
     let accountBalance = 0
-    
+
     // Simulate month by month from start year to retirement
     const retirementMonthIndex = yearMonthToMonthIndex(
         { year: config.retirementYear, month: config.retirementMonth },
         config.simStartYear
     )
-    
+
     for (let monthIndex = 0; monthIndex < retirementMonthIndex; monthIndex++) {
         const currentYearMonth = monthIndexToYearMonth(monthIndex, config.simStartYear)
-        
+
         // Apply yearly valorization at the end of each completed year
         if (monthIndex > 0 && monthIndex % 12 === 0) {
             const year = config.simStartYear + Math.floor(monthIndex / 12)
             accountBalance *= config.yearlyValorizationCoef(year)
         }
-        
+
         // Add monthly contribution
         for (const period of config.employmentPeriods) {
             if (isMonthInPeriod(currentYearMonth, period)) {
@@ -175,7 +175,7 @@ function simulateZusAccumulation(config: ZusRetirementConfig): number {
             }
         }
     }
-    
+
     return accountBalance
 }
 
@@ -183,21 +183,21 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
     const employmentMonths = calculateContributionMonths(config.employmentPeriods, config.simStartYear)
     const cappedStudyingMonths = Math.min(config.monthsOfStudying, 8 * 12) // Cap at 8 years
     const totalMonthsContributed = employmentMonths + cappedStudyingMonths + config.monthsMaternityLeave
-    
+
     // Step 1: Calculate account balance (only from employment, not studying)
     const totalZusAccountBalanceAtTimeOfRetirement = simulateZusAccumulation(config)
-    
+
     // Step 2: Calculate eligibility for minimal retirement
     const requiredMonthsForMinimalRetirement = config.gender === GENDERS.MALE ? 25 * 12 : 20 * 12 // 25 years for men, 20 years for women
     const isEligibleForMinimalRetirement = totalMonthsContributed >= requiredMonthsForMinimalRetirement
-    
+
     // Step 3: Calculate base monthly retirement
     const baseMonthlyRetirement = totalZusAccountBalanceAtTimeOfRetirement / config.avgMonthsAliveAfterRetirement
-    
+
     // Step 4: Create function that returns retirement amount for any month
     const monthlyRetirementAmount = (monthsAfterRetirementStart: number): number => {
         let currentRetirement = baseMonthlyRetirement
-        
+
         // Simulate retirement valorization month by month
         for (let month = 0; month < monthsAfterRetirementStart; month++) {
             // Valorization happens in March (month index 3 in 0-based indexing)
@@ -206,10 +206,10 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
                 currentRetirement *= config.yearlyRetirementValorizationMul(yearFromStart)
             }
         }
-        
+
         return currentRetirement
     }
-    
+
     return {
         totalMonthsContributed,
         totalZusAccountBalanceAtTimeOfRetirement,

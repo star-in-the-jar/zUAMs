@@ -17,7 +17,7 @@ const SectionBasicData: React.FC = () => {
     if (!isNaN(num) && num >= 0) {
       setAndMarkAsChanged(
         "workSinceAge",
-        Math.max(MIN_AGE_TO_WORK, Math.min(num, snap.age))
+        num
       );
     }
   };
@@ -47,14 +47,14 @@ const SectionBasicData: React.FC = () => {
   return (
     <div className="bg-white text-base-content card">
       <div className="p-0 card-body">
-        <h2 className="text-xl card-title text-primary">Podstawowe dane</h2>
+        <h2 className="text-primary text-xl card-title">Podstawowe dane</h2>
         <div className="flex flex-col gap-y-4">
           <div className="form-control">
             <label>
               <span className="font-medium label-text">
                 W jakim wieku przejdziesz na emeryturę?
               </span>
-              <div className="input w-full">
+              <div className="w-full input">
                 <input
                   value={snap.retirementAge}
                   className="grow"
@@ -73,9 +73,9 @@ const SectionBasicData: React.FC = () => {
               <label className="label">
                 <span className="font-medium label-text">Typ zatrudnienia</span>
               </label>
-              <div className="join w-full">
+              <div className="w-full join">
                 <input
-                  className="join-item btn w-1/2"
+                  className="w-1/2 join-item btn"
                   type="radio"
                   name="employmentType"
                   value="UoP"
@@ -84,7 +84,7 @@ const SectionBasicData: React.FC = () => {
                   aria-label="UoP"
                 />
                 <input
-                  className="join-item btn w-1/2"
+                  className="w-1/2 join-item btn"
                   type="radio"
                   name="employmentType"
                   value="JDG"
@@ -107,7 +107,7 @@ const SectionBasicData: React.FC = () => {
                 <span className="font-medium label-text">
                   Wynagrodzenie miesięczne brutto
                 </span>
-                <div className="input w-full">
+                <div className="w-full input">
                   <input
                     value={snap.monthlyGrossSalary}
                     className="grow"
@@ -126,7 +126,7 @@ const SectionBasicData: React.FC = () => {
                 <span className="font-medium label-text">
                   W jakim wieku zacząłeś pracować?
                 </span>
-                <div className="input w-full">
+                <div className="w-full input">
                   <input
                     value={snap.workSinceAge}
                     className="grow"

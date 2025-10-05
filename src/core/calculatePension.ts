@@ -33,7 +33,7 @@ export const calculatePension = (appState: AppState) => {
   return Math.round(value);
 };
 
-const prepareZusConfig = (
+export const prepareZusConfig = (
   appState: AppState
 ): ZusRetirementConfig => {
   const {

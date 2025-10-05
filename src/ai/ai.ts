@@ -97,7 +97,7 @@ export class AIUtil {
                     const calcResult = calculateZusRetirementSimple(validatedInput)
                     const netRetirement = IncomeTaxUtil.taxedZusRetirementMonthly(calcResult.baseMonthlyRetirement)
                     console.log("Calculating", res.calculationSchema, calcResult)
-                    response = `${res.response}\n\nWynik obliczeń:\nPrognozowana miesięczna emerytura BRUTTO: ${calcResult.baseMonthlyRetirement.toFixed(2)} zł\nPrognozowana miesięczna emerytura NETTO: ${netRetirement.toFixed(2)} zł\n*wartość skorygowana o przewidywaną inflację i waloryzację świadczeń\n\nUWAGA: Urlopy macierzyńskie i zwolnienia chorobowe (L4) mogą wpłynąć na wysokość emerytury. Przeciętna osoba w Polsce korzysta z około 1 miesiąca L4 rocznie.`;
+                    response = `${res.response}\n\nWynik obliczeń:\nPrognozowana miesięczna emerytura BRUTTO: ${calcResult.baseMonthlyRetirement.toFixed(2)} zł\nPrognozowana miesięczna emerytura NETTO: ${netRetirement.toFixed(2)} zł\n*wartość skorygowana o przewidywaną inflację i waloryzację świadczeń\n\nUWAGA: Urlopy macierzyńskie i zwolnienia chorobowe (L4) mogą wpłynąć na wysokość emerytury.`;
                 } catch (validationError) {
                     console.error('Validation error for calculation schema:', validationError);
                     response = res.response + "\n\nNie mogłem przeprowadzić dokładnych obliczeń z podanymi parametrami. Proszę podać bardziej szczegółowe informacje.";

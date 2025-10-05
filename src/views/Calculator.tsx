@@ -13,14 +13,21 @@ const Result: React.FC = () => {
   const snap = useSnapshot(appState);
 
   const getAlertText = () => {
+    const prefixText =
+      "Pola oznaczone kolorem żółtym są mają domyślne wartości";
+    const suffixText = "i mogą być zmienione";
+    let middleText;
     switch (snap.gender) {
       case GENDERS.MALE:
-        return "Pola oznaczone kolorem żółtym mają domyślne wartości statystycznego Polaka";
+        middleText = "statystycznego Polaka";
+        break;
       case GENDERS.FEMALE:
-        return "Pola oznaczone kolorem żółtym mają domyślne wartości statystycznej Polki";
+        middleText = "statystycznej Polki";
+        break;
       default:
-        return "Pola oznaczone kolorem żółtym mają domyślne wartości statystycznego Polaka/Polki";
+        middleText = "statystycznego Polaka/Polki";
     }
+    return `${prefixText} ${middleText} ${suffixText}`;
   };
 
   React.useEffect(() => {

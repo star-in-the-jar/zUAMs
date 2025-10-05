@@ -2,6 +2,8 @@ import React from "react";
 import { useSnapshot } from "valtio";
 import { appState, setAndMarkAsChanged } from "@/store/appState";
 import UnchangedField from "./UnchangedField";
+import GenderField from "./GenderField";
+import { GENDERS } from "@/const/genders";
 
 const handleMaternityLeavesChange = (
   e: React.ChangeEvent<HTMLInputElement>
@@ -26,28 +28,30 @@ const SectionLeavesAndBreaks: React.FC = () => {
       <div className="p-4 card-body">
         <h3 className="text-lg card-title text-primary">Urlopy i przerwy</h3>
         <div className="flex flex-col gap-y-4">
-          <UnchangedField field="maternityLeaves">
-            <div className="form-control">
-              <label>
-                <span className="font-medium label-text">
-                  Liczba urlopów macierzyńskich
-                </span>
-                <input
-                  value={snap.maternityLeaves}
-                  className="input-bordered w-full input"
-                  type="number"
-                  min="0"
-                  onChange={handleMaternityLeavesChange}
-                />
-              </label>
-              <div className="label">
-                <span className="label-text-alt">
-                  Liczba planowanych urlopów macierzyńskich w trakcie kariery
-                  zawodowej
-                </span>
+          <GenderField gender={GENDERS.FEMALE}>
+            <UnchangedField field="maternityLeaves">
+              <div className="form-control">
+                <label>
+                  <span className="font-medium label-text">
+                    Liczba urlopów macierzyńskich
+                  </span>
+                  <input
+                    value={snap.maternityLeaves}
+                    className="input-bordered w-full input"
+                    type="number"
+                    min="0"
+                    onChange={handleMaternityLeavesChange}
+                  />
+                </label>
+                <div className="label">
+                  <span className="label-text-alt">
+                    Liczba planowanych urlopów macierzyńskich w trakcie kariery
+                    zawodowej
+                  </span>
+                </div>
               </div>
-            </div>
-          </UnchangedField>
+            </UnchangedField>
+          </GenderField>
           <UnchangedField field="averageSickDays">
             <div className="form-control">
               <label className="label flex items-center gap-2">

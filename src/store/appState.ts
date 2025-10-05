@@ -6,6 +6,7 @@ export type AppState = {
   lastValid: string;
   gender: Gender | undefined;
   age: number;
+  workSinceAge: number;
   retirementAge: number;
   salary?: number;
   // Advanced options
@@ -23,6 +24,7 @@ export const wasAppStateFieldChanged: Record<keyof AppState, boolean> = {
   lastValid: false,
   gender: false,
   age: false,
+  workSinceAge: false,
   retirementAge: false,
   salary: false,
   // Advanced options
@@ -41,6 +43,7 @@ export const appState = proxy<AppState>({
   lastValid: "",
   gender: undefined,
   age: 20,
+  workSinceAge: 20,
   retirementAge: 75,
   salary: undefined,
   // Advanced options defaults

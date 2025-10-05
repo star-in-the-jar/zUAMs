@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { 
+import {
     calculateZusRetirement,
     ZUS_UOP_CONTRIBUTION_RATE,
     PeriodType
 } from './zus'
 import { GENDERS } from '@/const/genders'
-import type { 
+import type {
     ZusRetirementConfig,
     EmploymentPeriod
 } from './zus'
@@ -27,7 +27,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0, // No valorization for simple test
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -64,7 +63,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 120,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -99,7 +97,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -126,16 +123,15 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 100,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.05 // 5% increase
         }
 
         const result = calculateZusRetirement(config)
-        
+
         const baseRetirement = result.monthlyRetirementAmount(0)
         const retirementAfter15Months = result.monthlyRetirementAmount(15) // After March valorization
-        
+
         // After 15 months (which includes March of year 1), should be valorized
         expect(retirementAfter15Months).toBeCloseTo(baseRetirement * 1.05, 5)
     })
@@ -156,7 +152,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 24, // 2 years of studying
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -165,7 +160,7 @@ describe('ZUS Retirement Calculator', () => {
 
         // Should count 6 months employment + 24 months studying = 30 months
         expect(result.totalMonthsContributed).toBe(30)
-        
+
         // Account balance should only reflect employment (6 months * 5000 * 0.0976)
         const expectedBalance = 6 * 5000 * ZUS_UOP_CONTRIBUTION_RATE
         expect(result.totalZusAccountBalanceAtTimeOfRetirement).toBeCloseTo(expectedBalance, 2)
@@ -187,7 +182,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 100,
             monthsOfStudying: 120, // 10 years - should be capped at 96
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -214,7 +208,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -241,7 +234,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -268,7 +260,6 @@ describe('ZUS Retirement Calculator', () => {
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 0,
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -279,23 +270,29 @@ describe('ZUS Retirement Calculator', () => {
         expect(result.isEligibleForMinimalRetirement).toBe(false)
     })
 
-    it('should add maternity leave months to total months contributed without affecting account balance', () => {
-        const period: EmploymentPeriod = {
+    it('should add maternity leave months to total months contributed with 50% reduced contributions', () => {
+        const employmentPeriod: EmploymentPeriod = {
             type: PeriodType.UOP,
             from: { year: 2020, month: 1 },
             to: { year: 2020, month: 6 },
             grossMonthlySalary: () => 5000
         }
 
+        const maternityLeavePeriod: EmploymentPeriod = {
+            type: PeriodType.MATERNITY_LEAVE,
+            from: { year: 2020, month: 7 },
+            to: { year: 2021, month: 6 },
+            grossMonthlySalary: () => 5000
+        }
+
         const config: ZusRetirementConfig = {
-            employmentPeriods: [period],
+            employmentPeriods: [employmentPeriod, maternityLeavePeriod],
             gender: GENDERS.FEMALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 240,
             monthsOfStudying: 0,
-            monthsMaternityLeave: 12, // 12 months maternity leave
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -304,29 +301,37 @@ describe('ZUS Retirement Calculator', () => {
 
         // Should count 6 months employment + 12 months maternity leave = 18 months
         expect(result.totalMonthsContributed).toBe(18)
-        
-        // Account balance should only reflect employment (6 months * 5000 * 0.0976)
-        const expectedBalance = 6 * 5000 * ZUS_UOP_CONTRIBUTION_RATE
+
+        // Account balance should reflect employment (6 months * 5000 * 0.0976) + maternity leave (12 months * 5000 * 0.0976 * 0.5)
+        const employmentBalance = 6 * 5000 * ZUS_UOP_CONTRIBUTION_RATE
+        const maternityBalance = 12 * 5000 * ZUS_UOP_CONTRIBUTION_RATE * 0.5
+        const expectedBalance = employmentBalance + maternityBalance
         expect(result.totalZusAccountBalanceAtTimeOfRetirement).toBeCloseTo(expectedBalance, 2)
     })
 
     it('should combine studying and maternity leave months with employment months', () => {
-        const period: EmploymentPeriod = {
+        const employmentPeriod: EmploymentPeriod = {
             type: PeriodType.UOP,
             from: { year: 2020, month: 1 },
             to: { year: 2020, month: 3 },
             grossMonthlySalary: () => 4000
         }
 
+        const maternityLeavePeriod: EmploymentPeriod = {
+            type: PeriodType.MATERNITY_LEAVE,
+            from: { year: 2020, month: 4 },
+            to: { year: 2021, month: 9 },
+            grossMonthlySalary: () => 4000
+        }
+
         const config: ZusRetirementConfig = {
-            employmentPeriods: [period],
+            employmentPeriods: [employmentPeriod, maternityLeavePeriod],
             gender: GENDERS.FEMALE,
             simStartYear: 2020,
             retirementYear: 2021,
             retirementMonth: 1,
             avgMonthsAliveAfterRetirement: 200,
             monthsOfStudying: 36, // 3 years studying
-            monthsMaternityLeave: 18, // 18 months maternity leave
             yearlyValorizationCoef: () => 1.0,
             yearlyRetirementValorizationMul: () => 1.0
         }
@@ -335,9 +340,11 @@ describe('ZUS Retirement Calculator', () => {
 
         // Should count 3 months employment + 36 months studying + 18 months maternity = 57 months
         expect(result.totalMonthsContributed).toBe(57)
-        
-        // Account balance should only reflect employment (3 months * 4000 * 0.0976)
-        const expectedBalance = 3 * 4000 * ZUS_UOP_CONTRIBUTION_RATE
+
+        // Account balance should reflect employment (3 months * 4000 * 0.0976) + maternity leave (18 months * 4000 * 0.0976 * 0.5)
+        const employmentBalance = 3 * 4000 * ZUS_UOP_CONTRIBUTION_RATE
+        const maternityBalance = 18 * 4000 * ZUS_UOP_CONTRIBUTION_RATE * 0.5
+        const expectedBalance = employmentBalance + maternityBalance
         expect(result.totalZusAccountBalanceAtTimeOfRetirement).toBeCloseTo(expectedBalance, 2)
     })
 })

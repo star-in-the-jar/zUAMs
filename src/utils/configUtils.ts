@@ -99,7 +99,7 @@ export const calculateAvgMonthsAfterRetirement = (
 export const maternityLeavesToMaternityLeavesMonth = (
   maternityLeaves: number
 ): number => {
-  return maternityLeaves * 5;
+  return maternityLeaves * 6;
 };
 
 export const convertVibeCodedEmploymentTypeToPrzemekType = (

@@ -26,7 +26,7 @@ const SectionLeavesAndBreaks: React.FC = () => {
   return (
     <div className="bg-white text-base-content card">
       <div className="p-4 card-body">
-        <h3 className="text-lg card-title text-primary">Urlopy i przerwy</h3>
+        <h3 className="text-primary text-lg card-title">Urlopy i przerwy</h3>
         <div className="flex flex-col gap-y-4">
           <GenderComponent gender={GENDERS.FEMALE}>
             <UnchangedField field="maternityLeaves">
@@ -45,8 +45,7 @@ const SectionLeavesAndBreaks: React.FC = () => {
                 </label>
                 <div className="label">
                   <span className="label-text-alt">
-                    Liczba planowanych urlopów macierzyńskich w trakcie kariery
-                    zawodowej
+                    Przy założeniu, że każdy trwa około 6 miesięcy
                   </span>
                 </div>
               </div>
@@ -54,14 +53,14 @@ const SectionLeavesAndBreaks: React.FC = () => {
           </GenderComponent>
           <UnchangedField field="averageSickDays">
             <div className="form-control">
-              <label className="label flex items-center gap-2">
+              <label className="flex items-center gap-2 label">
                 <input
                   type="checkbox"
-                  className="toggle toggle-primary peer checked:bg-primary/15"
+                  className="peer checked:bg-primary/15 toggle toggle-primary"
                   checked={snap.averageSickDays}
                   onChange={handleAverageSickDaysChange}
                 />
-                <span className="peer-checked:text-primary font-medium">
+                <span className="font-medium peer-checked:text-primary">
                   Chcę brać tyle urlopów zdrowotnych co przeciętny Polak (34 dni
                   rocznie)
                 </span>

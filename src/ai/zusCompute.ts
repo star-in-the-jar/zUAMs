@@ -3,7 +3,7 @@ import { calculateZusRetirement, PeriodType } from '@/sim/zus'
 import type { ZusRetirementConfig } from '@/sim/zus'
 import { GENDERS } from '@/const/genders'
 
-// Main ZUS calculation input schema - simplified for single UoP period  
+// Main ZUS calculation input schema - simplified for single UoP period
 // Note: Use realistic dates (current year ±50 years), typical Polish salaries (3000-20000 PLN), standard retirement age (60-67)
 // UWAGA: Urlopy macierzyńskie i zwolnienia chorobowe (L4) mogą wpłynąć na wynik kalkulacji emerytury
 export const ZusCalculationInputSchema = z.object({
@@ -15,7 +15,6 @@ export const ZusCalculationInputSchema = z.object({
   personAgeInYears: z.number().int().min(18).max(100).describe('Current age of the person in years'),
   retirementAge: z.number().int().min(50).max(80).describe('Age when retirement begins (typical retirement age: 60-67)'),
   monthsOfStudying: z.number().int().min(0).max(96).default(0).describe('Months of studying - counted towards retirement but no contributions. Capped at 8 years (96 months)'),
-  monthsMaternityLeave: z.number().int().min(0).max(120).default(0).describe('Months of maternity leave - counted towards retirement but no contributions'),
   monthsLeave: z.number().int().min(0).max(600).default(0).describe('Months of leav - periods not contributing to ZUS.'),
   yearlyValorization: z.number().positive().default(1.025).describe('Fixed yearly valorization coefficient (default: 1.025 = 2.5%)'),
   yearlyRetirementValorization: z.number().positive().default(1.025).describe('Fixed yearly retirement valorization (default: 1.025 = 2.5%)')
@@ -46,13 +45,13 @@ export function calculateZusRetirementSimple(input: ZusCalculationInput): ZusCal
   // Calculate retirement year based on current age and retirement age
   const yearsUntilRetirement = input.retirementAge - input.personAgeInYears
   const retirementYear = 2025 + yearsUntilRetirement
-  
+
   // Calculate work end year (assume they work until retirement)
   const workEndYear = retirementYear
 
   // Calculate total years of work (past + future until retirement)
   const totalYearsOfWork = input.yearsOfPriorWork + yearsUntilRetirement
-  
+
   // Calculate sick leave coefficient to reduce effective salary
   const totalMonthsWorked = totalYearsOfWork * 12
   const sickLeaveCoef = Math.max(0, 1 - (input.monthsLeave / totalMonthsWorked))
@@ -69,7 +68,7 @@ export function calculateZusRetirementSimple(input: ZusCalculationInput): ZusCal
   // Calculate gender-dependent average life expectancy in months
   // Men: average life expectancy ~76 years, Women: ~82 years
   const averageLifeExpectancyMonths = input.gender === GENDERS.MALE ? 76 * 12 : 82 * 12
-  
+
   // Calculate months alive after retirement (life expectancy - retirement age)
   const avgMonthsAliveAfterRetirement = Math.max(1, averageLifeExpectancyMonths - (input.retirementAge * 12))
 
@@ -81,10 +80,9 @@ export function calculateZusRetirementSimple(input: ZusCalculationInput): ZusCal
     gender: input.gender,
     simStartYear: 2000,
     retirementYear,
-    retirementMonth: 1, 
+    retirementMonth: 1,
     avgMonthsAliveAfterRetirement,
     monthsOfStudying: input.monthsOfStudying,
-    monthsMaternityLeave: input.monthsMaternityLeave,
     yearlyValorizationCoef: () => input.yearlyValorization, // Convert to function
     yearlyRetirementValorizationMul: () => input.yearlyRetirementValorization // Convert to function
   }

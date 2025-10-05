@@ -1,11 +1,13 @@
 import { GENDERS } from "@/const/genders";
 import type { EmploymentPeriod, ZusRetirementConfig } from "@/sim";
+import { PeriodType } from "@/sim";
 import type { AppState } from "@/store/appState";
 import {
   calculateAvgMonthsAfterRetirement,
   calculateStartSimYear,
   calculateRetirementYear,
   convertVibeCodedEmploymentTypeToPrzemekType,
+  maternityLeavesToMaternityLeavesMonth,
 } from "@/utils/configUtils";
 import { calculateZusRetirement } from "@/sim";
 import { MINIMAL_PENSION } from "@/const/pension";
@@ -85,7 +87,6 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
       retirementAge
     ),
     retirementMonth: 12,
-    monthsMaternityLeave: maternityLeaves * 5,
     monthsOfStudying: 0,
     yearlyValorizationCoef: () => 1.01,
     yearlyRetirementValorizationMul: () => 1.008,
@@ -93,6 +94,7 @@ const prepareZusConfig = (appState: AppState): ZusRetirementConfig => {
     additionalSavings: additionalSavings,
     collectedZusBenefits: collectedZusBenefits,
     averageSickDays: averageSickDays,
+    monthsMaternityLeave: maternityLeavesToMaternityLeavesMonth(maternityLeaves),
   };
 };
 

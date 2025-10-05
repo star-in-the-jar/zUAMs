@@ -92,7 +92,6 @@ const ZusScenarioView: React.FC = () => {
       retirementMonth: 1,
       avgMonthsAliveAfterRetirement: MOCK_AVG_MONTHS,
       monthsOfStudying: 0,
-      monthsMaternityLeave: 0,
       yearlyValorizationCoef: (year: number) => 1.005, // Zmniejszona dla urealnienia
       yearlyRetirementValorizationMul: (yearFromStart: number) => 1.005,
     }),
@@ -172,39 +171,39 @@ const ZusScenarioView: React.FC = () => {
     const colorAfterZus = getColorClass(pensionAfterZus);
 
     return (
-      <div className="card w-full bg-base-100 shadow-xl border border-primary/20">
-        <div className="card-body p-5">
-          <h2 className="card-title text-2xl justify-center text-primary mb-3 border-b-2 border-primary/50 pb-2">
-            <PresentationChartLineIcon className="w-6 h-6 mr-2" />
+      <div className="bg-base-100 shadow-xl border border-primary/20 w-full card">
+        <div className="p-5 card-body">
+          <h2 className="justify-center mb-3 pb-2 border-primary/50 border-b-2 text-primary text-2xl card-title">
+            <PresentationChartLineIcon className="mr-2 w-6 h-6" />
             {scenario.label}
           </h2>
 
-          <div className="stats stats-vertical shadow bg-base-200 mb-4">
-            <div className="stat place-items-center p-3">
-              <div className="stat-title flex items-center text-info">
-                <ClockIcon className="w-5 h-5 mr-1" />
+          <div className="bg-base-200 shadow mb-4 stats stats-vertical">
+            <div className="place-items-center p-3 stat">
+              <div className="flex items-center text-info stat-title">
+                <ClockIcon className="mr-1 w-5 h-5" />
                 Wydłużenie pracy
               </div>
-              <div className="stat-value text-success flex items-center">
+              <div className="flex items-center text-success stat-value">
                 +{scenario.years} lat
               </div>
-              <div className="stat-desc text-sm">
+              <div className="text-sm stat-desc">
                 Emerytura od {finalRetirementYear} r.
               </div>
             </div>
 
-            <div className="stat place-items-center p-3 border-t border-gray-300">
-              <div className="stat-title text-info flex items-center">
-                <BanknotesIcon className="w-5 h-5 mr-1" />
+            <div className="place-items-center p-3 border-gray-300 border-t stat">
+              <div className="flex items-center text-info stat-title">
+                <BanknotesIcon className="mr-1 w-5 h-5" />
                 Zysk z ZUS (mc)
               </div>
-              <div className="stat-value text-success text-2xl">
+              <div className="text-success text-2xl stat-value">
                 +{Math.round(zusGain)} zł
               </div>
             </div>
 
-            <div className="stat place-items-center p-3 border-t border-primary/20 bg-base-300">
-              <div className="stat-title text-base-content font-bold text-lg">
+            <div className="place-items-center bg-base-300 p-3 border-primary/20 border-t stat">
+              <div className="font-bold text-base-content text-lg stat-title">
                 PO ZYSKU Z ZUS:
               </div>
               <div
@@ -220,23 +219,23 @@ const ZusScenarioView: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-base-200 min-h-screen rounded-2xl">
-      <h1 className="text-4xl font-bold mb-8 text-center text-primary border-b-4 border-primary/50 pb-3">
+    <div className="bg-base-200 p-6 rounded-2xl min-h-screen">
+      <h1 className="mb-8 pb-3 border-primary/50 border-b-4 font-bold text-primary text-4xl text-center">
         ZUS: Dłuższa Praca
       </h1>
 
-      <p className="text-center text-xl text-base-content/70 mb-8">
+      <p className="mb-8 text-base-content/70 text-xl text-center">
         Bazowa emerytura (zgodnie z prognozą ZUS):{" "}
         <span className="font-bold">{Math.round(currentPension)} zł/mc</span>
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
         {scenarios.map((scenario) => (
           <ScenarioColumn key={scenario.years} scenario={scenario} />
         ))}
       </div>
 
-      <div className="alert alert-info mt-10 shadow-lg max-w-4xl mx-auto text-xl">
+      <div className="shadow-lg mx-auto mt-10 max-w-4xl text-xl alert alert-info">
         <span>
           Czy wiedziałeś, że zostając na emeryturze powyżej 2 lat względem
           ustawowego wieku emerytalnego, należysz do 3,7% społeczeństwa w
@@ -245,7 +244,7 @@ const ZusScenarioView: React.FC = () => {
           o 0,3% dla kobiet.
         </span>
       </div>
-      <div className="alert alert-info mt-10 shadow-lg max-w-4xl mx-auto text-xl">
+      <div className="shadow-lg mx-auto mt-10 max-w-4xl text-xl alert alert-info">
         <span>
           Warto jednak zaznaczyć, że w przeciągu dwóch lat (2022-2024)
           odnotowano spadek osób przechodzących na emeryturę równo w wieku

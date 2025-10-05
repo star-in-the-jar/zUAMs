@@ -43,7 +43,7 @@ const Result: React.FC = () => {
         <h1 className="mb-4 font-semibold text-primary text-4xl">
           Zakładając, że
         </h1>
-        <div className="alert bg-accent/30 text-accent-content mb-12">
+        <div className="bg-accent/30 mb-12 text-accent-content alert">
           <ErrorIcon />
           {getAlertText()}
         </div>
@@ -67,6 +67,12 @@ const Result: React.FC = () => {
             </div>
           </div>
         </form>
+        <div className="mb-6 text-xs text-base-content/70">
+          Wszystkie podane i oczekiwane wartości uwzględniają inflację. Należy traktować podane wartości jako siłę nabywczą na dzień dzisiejszy.
+        </div>
+        <span>
+
+        </span>
       </div>
 
       <div className="bottom-5 left-1/2 fixed bg-white shadow-md p-4 px-6 border border-base-200 rounded-full text-base -translate-x-1/2">

@@ -83,7 +83,7 @@ Pamiętaj, że przeciętna osoba w Polsce korzysta z około 1 miesiąca zwolnien
 
 FORMAT ODPOWIEDZI:
 NIE używaj formatowania Markdown. Pisz TYLKO zwykłym tekstem (plaintext).
-Zamiast **pogrubienia** używaj WIELKICH LITER dla podkreślenia. Odpowiadaj króto i rzeczowo.
+Odpowiadaj króto i rzeczowo.
 
 WYKONYWANIE OBLICZEŃ:
 Gdy użytkownik pyta o emeryturę - dopytaj o:

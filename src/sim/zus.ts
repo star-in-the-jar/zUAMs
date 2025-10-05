@@ -7,7 +7,8 @@ import { GENDERS } from '@/const/genders'
  */
 export const PeriodType = {
     UOP: 'uop',
-    SELF_EMPLOYED: 'self-employed'
+    SELF_EMPLOYED: 'self-employed',
+    MATERNITY_LEAVE: 'maternity-leave'
 } as const
 
 export type PeriodType = typeof PeriodType[keyof typeof PeriodType]
@@ -41,9 +42,19 @@ export type SelfEmploymentPeriod = {
 }
 
 /**
+ * Maternity leave period with 50% reduced ZUS contributions
+ */
+export type MaternityLeavePeriod = {
+    type: typeof PeriodType.MATERNITY_LEAVE
+    from: YearMonth
+    to: YearMonth
+    grossMonthlySalary: (year: number, month: number) => number // ZUS contribution: 4.88% of gross salary (50% of normal)
+}
+
+/**
  * Tagged union of employment periods
  */
-export type EmploymentPeriod = UoPPeriod | SelfEmploymentPeriod
+export type EmploymentPeriod = UoPPeriod | SelfEmploymentPeriod | MaternityLeavePeriod
 
 /**
  * Configuration for ZUS retirement calculation
@@ -57,8 +68,6 @@ export type ZusRetirementConfig = {
     avgMonthsAliveAfterRetirement: number
     /** Months of studying - counted towards retirement but no contributions. Capped at 8 years (96 months) */
     monthsOfStudying: number
-    /** Months of maternity leave - counted towards retirement but no contributions */
-    monthsMaternityLeave: number
     /** Yearly valorization coefficient for account balance. Default: fixed 2.5% (1.025) */
     yearlyValorizationCoef: (year: number) => number
     /** Yearly valorization multiplier for retirement payments. Default: fixed 2.5% (1.025) */
@@ -68,6 +77,7 @@ export type ZusRetirementConfig = {
     yearlyAdditionalSavingsValorizationMul: (yearFromStart: number) => number
     collectedZusBenefits: number
     averageSickDays: boolean
+    monthsMaternityLeave: number
 }
 
 /**
@@ -173,6 +183,9 @@ function simulateZusAccumulation(config: ZusRetirementConfig): number {
                 if (period.type === PeriodType.UOP) {
                     const grossSalary = period.grossMonthlySalary(currentYearMonth.year, currentYearMonth.month)
                     accountBalance += grossSalary * ZUS_UOP_CONTRIBUTION_RATE
+                } else if (period.type === PeriodType.MATERNITY_LEAVE) {
+                    const grossSalary = period.grossMonthlySalary(currentYearMonth.year, currentYearMonth.month)
+                    accountBalance += grossSalary * ZUS_UOP_CONTRIBUTION_RATE * 0.5 // 50% of normal contribution
                 } else {
                     accountBalance += period.monthlyZusContribution(currentYearMonth.year, currentYearMonth.month)
                 }
@@ -188,16 +201,20 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
     const employmentMonths = calculateContributionMonths(config.employmentPeriods, config.simStartYear)
     const cappedStudyingMonths = Math.min(config.monthsOfStudying, 8 * 12) // Cap at 8 years
     const totalMonthsContributed = employmentMonths + cappedStudyingMonths + config.monthsMaternityLeave
+    const totalAdditionalSavingsContributed = config.additionalSavings * config.yearlyAdditionalSavingsValorizationMul(totalMonthsContributed)
+    const totalCollectedZusBenefitsContributed = config.collectedZusBenefits * config.yearlyRetirementValorizationMul(totalMonthsContributed)
+    const totalMaternityLeaveContributed = config.monthsMaternityLeave * config.yearlyRetirementValorizationMul(totalMonthsContributed)
 
     // Step 1: Calculate account balance (only from employment, not studying)
-    const totalZusAccountBalanceAtTimeOfRetirement = simulateZusAccumulation(config)
+    const totalZusAccountBalanceAtTimeOfRetirement = simulateZusAccumulation(config) + totalAdditionalSavingsContributed + totalCollectedZusBenefitsContributed
 
     // Step 2: Calculate eligibility for minimal retirement
     const requiredMonthsForMinimalRetirement = config.gender === GENDERS.MALE ? 25 * 12 : 20 * 12 // 25 years for men, 20 years for women
     const isEligibleForMinimalRetirement = totalMonthsContributed >= requiredMonthsForMinimalRetirement
 
     // Step 3: Calculate base monthly retirement
-    const baseMonthlyRetirement = totalZusAccountBalanceAtTimeOfRetirement / config.avgMonthsAliveAfterRetirement
+    const totalZusAccountBalanceAtTimeOfRetirementReduced = totalZusAccountBalanceAtTimeOfRetirement - (totalMaternityLeaveContributed * 1000)
+    const baseMonthlyRetirement = totalZusAccountBalanceAtTimeOfRetirementReduced / config.avgMonthsAliveAfterRetirement
 
     // Step 4: Create function that returns retirement amount for any month
     const monthlyRetirementAmount = (monthsAfterRetirementStart: number): number => {
@@ -214,6 +231,7 @@ export function calculateZusRetirement(config: ZusRetirementConfig): ZusRetireme
 
         return currentRetirement
     }
+
 
     return {
         totalMonthsContributed,
